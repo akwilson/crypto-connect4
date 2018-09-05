@@ -1,12 +1,13 @@
 export default {
     accounts: {
-        player: "0x73654859",
+        player: "",
         oppenent: ""
     },
     game: {
-        grid: [[], [], [], []],
+        grid: [],
         playerMove: true
     },
-    statusMessages: ["Txn OK", "Txn2 OK"],
-    errorMessage: ""
+    statusMessages: [],
+    errorMessage: "",
+    web3Initialised: false
 }

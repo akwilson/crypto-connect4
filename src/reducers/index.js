@@ -7,6 +7,18 @@ const reducer = (state = initialState, action) => {
             return action.players
         case "NEXT_MOVE":
             return action.move
+        case "WEB3_INIT":
+            return {
+                ...state,
+                accounts: {
+                    player: action.accounts[0]
+                }
+            }
+        case "ERROR_MSG":
+            return {
+                ...state,
+                errorMessage: action.errorMsg
+            }
         default:
             return state
     }
