@@ -11,7 +11,6 @@ class Board extends Component {
             	</svg>
         		<div><button id="btnTurn">Move</button></div>
         		<div>Game ID: <span id="gameId"></span></div>
-        		<div id="errorMsg"></div>
         	</div>
         )
     }

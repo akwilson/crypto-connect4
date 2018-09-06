@@ -1,15 +1,8 @@
-/*
- * const EventEmitter = require("events")
-const Web3 = require("web3")
-const Connect4ContractABI = require("Connect4").abi
-const actions = 
-*/
 import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
-import * as actions from "./actions"
 
-const connect4Address = "0x84be6c7e3a6c14e9dfb9c4e21db7fced8a2f853a"
+const connect4Address = "0x5a7d0aaaa9f1eba23f22da09012f877fdf7549ee"
 
 class Connect4Web3 extends EventEmitter {
     init() {
@@ -21,10 +14,15 @@ class Connect4Web3 extends EventEmitter {
 			this.web3js = new Web3(window.web3.currentProvider)
 		} else {
 			console.log("No web3? You should consider trying MetaMask!")
-			Promise.reject(new Error("Missing web3"))
+			return Promise.reject(new Error("Missing web3"))
 		}
 
-		this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
+        try {
+		    this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
+        } catch (err) {
+            return Promise.reject(err)
+        }
+
 		return this.web3js.eth.getAccounts()
         	.then(accounts => {
             	this._registerEvents(accounts[0])
@@ -72,20 +70,4 @@ class Connect4Web3 extends EventEmitter {
     }
 }
 
-function c4ToRedux(c4Web3) {
-    c4Web3.on("NEW_GAME_OK", newGameData => {
-        actions.newGame(newGameData)
-    })
-
-    c4Web3.on("NEW_GAME_ERROR", error => {
-        actions.errorAction(error)
-    })
-
-    c4Web3.on("NEXT_MOVE", moveData => {
-        actions.nextMove(moveData)
-    })
-}
-
-const c4Web3 = new Connect4Web3()
-c4ToRedux(c4Web3)
-export default c4Web3
+export default new Connect4Web3()
