@@ -1,9 +1,18 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
+import { opponentChange, newGame } from "../actions"
 
 const mapStateToProps = state => { return { accounts: state.accounts } }
 
 class Challenger extends Component {
+    doChallenge() {
+        this.props.dispatch(newGame(this.props.accounts))
+    }
+
+    opponentChange(oppValue) {
+        this.props.dispatch(opponentChange(oppValue))
+    }
+
     render() {
         const accounts = this.props.accounts
 
@@ -16,8 +25,8 @@ class Challenger extends Component {
             	</div>
             	<div className="row2">
                 	<label className="block">Opponent Account</label>
-                	<input id="oppAccount" type="text"></input>
-                	<button id="btnNew" className="bc2">Challenge</button>
+                	<input id="oppAccount" type="text" onChange={e => this.opponentChange(e.target.value)}></input>
+                	<button id="btnNew" className="bc2" onClick={e => this.doChallenge()}>Challenge</button>
             	</div>
         	</fieldset>
         )

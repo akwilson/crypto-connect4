@@ -1,8 +1,18 @@
 import Connect4Web3 from "../Connect4Web3"
 
-export const newGame = players => ({
-    type: "NEW_GAME",
-    players
+export const newGameReceipt = receipt => ({
+    type: "NEW_GAME_RECEIPT",
+    receipt
+})
+
+export const newGameBegin = gameData => ({
+    type: "NEW_GAME_BEGIN",
+    gameData
+})
+
+export const opponentChange = opponent => ({
+    type: "OPPONENT_CHANGE",
+    opponent
 })
 
 export const nextMove = (gameId, column) => ({
@@ -34,6 +44,14 @@ export const initialiseWeb3 = () => {
     return dispatch => {
         return Connect4Web3.init()
             .then(accounts => dispatch(web3Init(accounts)))
+            .catch(err => dispatch(errorAction(err)))
+    }
+}
+
+export const newGame = players => {
+    return dispatch => {
+        return Connect4Web3.newGame(players.player, players.opponent)
+            .then(receipt => dispatch(newGameReceipt(receipt)))
             .catch(err => dispatch(errorAction(err)))
     }
 }

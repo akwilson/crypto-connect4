@@ -10,7 +10,8 @@ const mapStoreToProps = store => {
         boardWidth: store.game.boardDef.width,
         tileSize: store.game.boardDef.tileSize,
         hCol: store.game.grid.highlightedCol,
-        sCol: store.game.grid.selectedCol
+        sCol: store.game.grid.selectedCol,
+        gameId: store.game.gameId
     }
 }
 
@@ -50,7 +51,7 @@ class Board extends Component {
     }
 
     render() {
-        const { boardHeight, boardWidth, tileSize } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId } = this.props
 
         return (
             <div id="gdiv">
@@ -59,7 +60,7 @@ class Board extends Component {
                     {this.buildGrid(boardHeight, boardWidth, tileSize)}
                 </svg>
                 <div><button id="btnTurn">Move</button></div>
-                <div>Game ID: <span id="gameId"></span></div>
+                <div>Game ID: <span id="gameId">{gameId}</span></div>
             </div>
         )
     }

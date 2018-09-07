@@ -3,7 +3,7 @@ import * as actions from "./actions"
 
 export default store => {
     c4Web3.on("NEW_GAME_OK", newGameData => {
-        store.dispatch(actions.newGame(newGameData))
+        store.dispatch(actions.newGameBegin(newGameData))
     })
 
     c4Web3.on("NEW_GAME_ERROR", error => {

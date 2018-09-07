@@ -61,9 +61,21 @@ class Connect4Web3 extends EventEmitter {
 			})
 	}
 
-    newGame(player1, player2) {
-        // return promise
-        // subscribe to NextTurn and GameOver for gameId
+    newGame(player, opponent) {
+        return new Promise((resolve, reject) => {
+            this.connect4.methods.newGame(player, opponent)
+                .send({from: player})
+                .on("receipt", receipt => {
+                    console.log("NewGame txn OK")
+                    console.log(receipt)
+                    resolve(receipt)
+                })
+                .on("error", err => {
+                    console.error("NewGame txn ERR")
+                    console.error(err)
+                    reject(err)
+                })
+        })
     }
 
     takeTurn(column) {

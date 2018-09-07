@@ -2,8 +2,27 @@ import initialState from "./initialState"
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case "NEW_GAME":
-            return action.players
+        case "OPPONENT_CHANGE":
+            return {
+                ...state,
+                accounts: {
+                    ...state.accounts,
+                    opponent: action.opponent
+                }
+            }
+        case "NEW_GAME_RECEIPT":
+            return {
+                ...state,
+                statusMessages: state.statusMessages.concat(action.receipt.transactionHash)
+            }
+        case "NEW_GAME_BEGIN":
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    gameId: action.gameData.gameId
+                }
+            }
         case "NEXT_MOVE":
             return action.move
         case "WEB3_INIT":
