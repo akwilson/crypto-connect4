@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
+import { selectedGridCol, highlightedGridCol } from "../actions"
 
 import "./Board.css"
 
@@ -7,19 +8,32 @@ const mapStoreToProps = store => {
     return {
         boardHeight: store.game.boardDef.height,
         boardWidth: store.game.boardDef.width,
-        tileSize: store.game.boardDef.tileSize
+        tileSize: store.game.boardDef.tileSize,
+        hCol: store.game.grid.highlightedCol,
+        sCol: store.game.grid.selectedCol
     }
 }
 
 class Board extends Component {
     selectColumn(col) {
-        console.log(col)
+        this.props.dispatch(selectedGridCol(col))
+    }
+
+    highlightColumn(col) {
+        this.props.dispatch(highlightedGridCol(col))
     }
 
     makeTile(index, row, col, tileSize) {
+        let cName = "r_off"
+        if (this.props.sCol === col) {
+            cName = "r_select"
+        } else if (this.props.hCol === col) {
+            cName = "r_on"
+        }
+
         return (
-            <rect key={index} className="r_off" x={col * tileSize} y={row * tileSize} width={tileSize} height={tileSize}
-                onClick={e => this.selectColumn(col)}/>
+            <rect key={index} className={cName} x={col * tileSize} y={row * tileSize} width={tileSize} height={tileSize}
+                onClick={e => this.selectColumn(col)} onMouseOver={e => this.highlightColumn(col)}/>
         )
     }
 

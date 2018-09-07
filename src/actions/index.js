@@ -20,6 +20,16 @@ export const errorAction = error => ({
     errMsg: error.message
 })
 
+export const selectedGridCol = column => ({
+    type: "SELECTED_GRID_COL",
+    column
+})
+
+export const highlightedGridCol = column => ({
+    type: "HIGHLIGHTED_GRID_COL",
+    column
+})
+
 export const initialiseWeb3 = () => {
     return dispatch => {
         return Connect4Web3.init()

@@ -13,6 +13,28 @@ const reducer = (state = initialState, action) => {
                     player: action.accounts[0]
                 }
             }
+        case "HIGHLIGHTED_GRID_COL":
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    grid: {
+                        ...state.game.grid,
+                        highlightedCol: action.column
+                    }
+                }
+            }
+        case "SELECTED_GRID_COL":
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    grid: {
+                        ...state.game.grid,
+                        selectedCol: action.column
+                    }
+                }
+            }
         case "ERROR_MSG":
             return {
                 ...state,
