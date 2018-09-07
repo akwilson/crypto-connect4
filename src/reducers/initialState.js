@@ -11,7 +11,9 @@ export default {
         },
         grid: {
             highlightedCol: null,
-            selectedCol: null
+            selectedCol: null,
+            playerMoves: [],
+            opponentMoves: []
         },
         gameId: null,
         playerMove: true
