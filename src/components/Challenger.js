@@ -2,7 +2,9 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import { opponentChange, newGame } from "../actions"
 
-const mapStateToProps = state => { return { accounts: state.accounts } }
+const mapStateToProps = state => {
+    return { accounts: state.pageUI.accounts }
+}
 
 class Challenger extends Component {
     doChallenge() {

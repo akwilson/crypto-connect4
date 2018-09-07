@@ -6,12 +6,12 @@ import "./Board.css"
 
 const mapStoreToProps = store => {
     return {
-        boardHeight: store.game.boardDef.height,
-        boardWidth: store.game.boardDef.width,
-        tileSize: store.game.boardDef.tileSize,
-        hCol: store.game.grid.highlightedCol,
-        sCol: store.game.grid.selectedCol,
-        gameId: store.game.gameId
+        boardHeight: store.gamePlay.boardDef.height,
+        boardWidth: store.gamePlay.boardDef.width,
+        tileSize: store.gamePlay.boardDef.tileSize,
+        hCol: store.board.highlightedCol,
+        sCol: store.board.selectedCol,
+        gameId: store.gamePlay.game.gameId
     }
 }
 

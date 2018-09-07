@@ -3,8 +3,8 @@ import { connect } from "react-redux"
 
 const mapStateToProps = state => {
     return {
-        errorMessage: state.errorMessage,
-        statusMessages: state.statusMessages
+        errorMessage: state.pageUI.errorMessage,
+        statusMessages: state.pageUI.statusMessages
     }
 }
 

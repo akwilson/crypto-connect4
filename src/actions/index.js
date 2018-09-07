@@ -1,8 +1,8 @@
 import Connect4Web3 from "../Connect4Web3"
 
-export const newGameReceipt = receipt => ({
-    type: "NEW_GAME_RECEIPT",
-    receipt
+export const statusAppend = message => ({
+    type: "STATUS_APPEND",
+    message
 })
 
 export const newGameBegin = gameData => ({
@@ -51,7 +51,7 @@ export const initialiseWeb3 = () => {
 export const newGame = players => {
     return dispatch => {
         return Connect4Web3.newGame(players.player, players.opponent)
-            .then(receipt => dispatch(newGameReceipt(receipt)))
+            .then(receipt => dispatch(statusAppend(receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }
 }
