@@ -6,7 +6,6 @@ const mapStateToProps = state => { return { errorMessage: state.errorMessage } }
 class Status extends Component {
     render() {
         const errorMessage = this.props.errorMessage
-        console.log(this.props)
 
         return (
             <div id="errorMsg">{errorMessage}</div>
