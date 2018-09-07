@@ -13,6 +13,7 @@ export default {
             highlightedCol: null,
             selectedCol: null
         },
+        gameId: null,
         playerMove: true
     },
     statusMessages: [],

@@ -52,6 +52,13 @@ class Board extends Component {
 
     render() {
         const { boardHeight, boardWidth, tileSize, gameId } = this.props
+        if (gameId === null) {
+            return (
+                <div>
+                    Waiting for a game to begin. Try challenging someone...!
+                </div>
+            )
+        }
 
         return (
             <div id="gdiv">
