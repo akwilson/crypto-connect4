@@ -23,8 +23,21 @@ export default (state = initialState, action) => {
                     playerMove: action.gameData.playerMove
                 }
             }
-        case "NEXT_MOVE":
-            return action.move
+        case "NEXT_MOVE_RECEIVED":
+            const mv = {
+                row: action.moveData.y,
+                col: action.moveData.x
+            }
+
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    playerMove: action.moveData.playerMove,
+                    playerMoves: action.moveData.playerMove ? state.game.playerMoves : state.game.playerMoves.concat(mv),
+                    opponentMoves: action.moveData.playerMove ? state.game.opponentMoves.concat(mv) : state.game.opponentMoves
+                }
+            }
         default:
             return state
     }

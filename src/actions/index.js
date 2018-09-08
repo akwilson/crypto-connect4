@@ -10,14 +10,19 @@ export const newGameBegin = gameData => ({
     gameData
 })
 
+export const gameOver = gameData => ({
+    type: "GAME_OVER",
+    gameData
+})
+
 export const opponentChange = opponent => ({
     type: "OPPONENT_CHANGE",
     opponent
 })
 
-export const nextMoveReceived = (gameId, player, col, row) => ({
+export const nextMoveReceived = moveData => ({
     type: "NEXT_MOVE_RECEIVED",
-    move: { gameId, player, col, row }
+    moveData
 })
 
 export const web3Init = accounts => ({
@@ -58,7 +63,7 @@ export const newGame = players => {
 
 export const nextMove = moveData => {
     return dispatch => {
-        return Connect4Web3.takeTurn(moveData.gameId, moveData.column, moveData.player)
+        return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
             .then(receipt => dispatch(statusAppend(receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }

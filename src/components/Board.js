@@ -1,8 +1,12 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
-import { selectedGridCol, highlightedGridCol } from "../actions"
+import { selectedGridCol, highlightedGridCol, nextMove } from "../actions"
 
 import "./Board.css"
+
+const moveToString = move => {
+    return `${move.row}.${move.col}`
+}
 
 const mapStoreToProps = store => {
     return {
@@ -12,7 +16,10 @@ const mapStoreToProps = store => {
         hCol: store.board.highlightedCol,
         sCol: store.board.selectedCol,
         gameId: store.gamePlay.game.gameId,
-        playerMove: store.gamePlay.game.playerMove
+        playerMove: store.gamePlay.game.playerMove,
+        playerMoves: new Set(store.gamePlay.game.playerMoves.map(moveToString)),
+        opponentMoves: new Set(store.gamePlay.game.opponentMoves.map(moveToString)),
+        player: store.pageUI.accounts.player
     }
 }
 
@@ -25,9 +32,24 @@ class Board extends Component {
         this.props.dispatch(highlightedGridCol(col))
     }
 
+    takeTurn() {
+        const moveData = {
+            gameId: this.props.gameId,
+            column: this.props.sCol,
+            player: this.props.player
+        }
+
+        this.props.dispatch(nextMove(moveData))
+    }
+
     makeTile(index, row, col, tileSize) {
+        const move = moveToString({row: 5 - row, col})
         let cName = "r_off"
-        if (this.props.sCol === col) {
+        if (this.props.playerMoves.has(move)) {
+            cName = "r_usr"
+        } else if (this.props.opponentMoves.has(move)) {
+            cName = "r_opp"
+        } else if (this.props.sCol === col) {
             cName = "r_select"
         } else if (this.props.hCol === col) {
             cName = "r_on"
@@ -67,7 +89,7 @@ class Board extends Component {
                     width={boardWidth * tileSize} height={boardHeight * tileSize}>
                     {this.buildGrid(boardHeight, boardWidth, tileSize)}
                 </svg>
-                <div><button id="btnTurn" disabled={!playerMove}>Move</button></div>
+                <div><button id="btnTurn" onClick={e => this.takeTurn()} disabled={!playerMove}>Move</button></div>
                 <div>Game ID: <span id="gameId">{gameId}</span></div>
             </div>
         )

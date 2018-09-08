@@ -48,7 +48,7 @@ class Connect4Web3 extends EventEmitter {
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)
-				this.emit("NEW_GAME_ERROR", err)
+				this.emit("GAME_ERROR", err)
 			})
 
     	connect4Events.events.NewGame({filter: {player2: accountId}})
@@ -59,9 +59,41 @@ class Connect4Web3 extends EventEmitter {
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)
-				this.emit("NEW_GAME_ERROR", err)
+				this.emit("GAME_ERROR", err)
 			})
-	}
+
+        // TODO: filter on gameId
+        connect4Events.events.NextMove()
+            .on("data", event => {
+                const res = event.returnValues
+                console.log(`EVENT NextMove Id: ${res.gameId} player: ${res.player} X: ${res.x} Y: ${res.y}`)
+                const moveData = {
+                    gameId: res.gameId,
+                    player: res.player,
+                    x: Number(res.x),
+                    y: Number(res.y),
+                    playerMove: res.player !== accountId
+                }
+
+                this.emit("NEXT_MOVE_OK", moveData)
+            })
+            .on("error", err => {
+                console.error("EVENT NextMove ERROR: " + err)
+                this.emit("GAME_ERROR", err)
+            })
+
+        // TODO: filter on gameId
+        connect4Events.events.GameOver()
+            .on("data", event => {
+                const res = event.returnValues
+                console.log(`EVENT GameOver Id: ${res.gameId} Winner: ${res.winner}`)
+                this.emit("GAME_OVER_OK", res)
+            })
+            .on("error", err => {
+                console.error("EVENT GameOver ERROR: " + err)
+                this.emit("GAME_ERROR", err)
+            })
+    }
 
     newGame(player, opponent) {
         return new Promise((resolve, reject) => {
