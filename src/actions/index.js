@@ -15,9 +15,9 @@ export const opponentChange = opponent => ({
     opponent
 })
 
-export const nextMove = (gameId, column) => ({
-    type: "NEXT_MOVE",
-    move: { gameId, column }
+export const nextMoveReceived = (gameId, player, col, row) => ({
+    type: "NEXT_MOVE_RECEIVED",
+    move: { gameId, player, col, row }
 })
 
 export const web3Init = accounts => ({

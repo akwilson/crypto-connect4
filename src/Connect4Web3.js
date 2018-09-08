@@ -78,9 +78,9 @@ class Connect4Web3 extends EventEmitter {
         })
     }
 
-    takeTurn(player, gmaeId, column) {
+    takeTurn(player, gameId, column) {
         return new Promise((resolve, reject) => {
-            this,connect4.methods.takeTurn(gameId, column)
+            this.connect4.methods.takeTurn(gameId, column)
                 .send({from: player})
                 .on("receipt", receipt => {
                     console.log("TakeTurn txn OK")
