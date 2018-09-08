@@ -55,3 +55,11 @@ export const newGame = players => {
             .catch(err => dispatch(errorAction(err)))
     }
 }
+
+export const nextMove = moveData => {
+    return dispatch => {
+        return Connect4Web3.takeTurn(moveData.gameId, moveData.column, moveData.player)
+            .then(receipt => dispatch(statusAppend(receipt.transactionHash)))
+            .catch(err => dispatch(errorAction(err)))
+    }
+}
