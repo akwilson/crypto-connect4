@@ -6,10 +6,6 @@ const connect4Address = "0x5a7d0aaaa9f1eba23f22da09012f877fdf7549ee"
 
 class Connect4Web3 extends EventEmitter {
     init() {
-        // init web3
-        // set up events to NewGame()
-		// get accounts
-
 		if (typeof web3 !== "undefined") {
 			this.web3js = new Web3(window.web3.currentProvider)
 		} else {
@@ -34,15 +30,21 @@ class Connect4Web3 extends EventEmitter {
     	const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:8545"))
     	const connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, connect4Address)
 
-    	function newGameOk(event) {
+    	function newGameOk(event, playerMove) {
         	const res = event.returnValues
         	console.log(`EVENT: NewGame Id: ${res.gameId} P1: ${res.player1} P2: ${res.player2}`)
+            return {
+                gameId: res.gameId,
+                player: accountId,
+                opponent: res.player1 === accountId ? res.player2 : res.player1,
+                playerMove
+            }
     	}
 
     	connect4Events.events.NewGame({filter: {player1: accountId}})
         	.on("data", event => {
-            	newGameOk(event)
-				this.emit("NEW_GAME_OK", event.returnValues)
+            	const ngd = newGameOk(event, true)
+				this.emit("NEW_GAME_OK", ngd)
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)
@@ -52,8 +54,8 @@ class Connect4Web3 extends EventEmitter {
     	connect4Events.events.NewGame({filter: {player2: accountId}})
         	.on("data", event => {
             	console.log("PLAYER2")
-            	newGameOk(event)
-				this.emit("NEW_GAME_OK", event.returnValues)
+            	const ngd = newGameOk(event, false)
+				this.emit("NEW_GAME_OK", ngd)
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)

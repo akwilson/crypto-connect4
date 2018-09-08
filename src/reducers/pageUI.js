@@ -1,7 +1,7 @@
 const initialState = {
     accounts: {
         player: null,
-        opponent: null
+        opponent: ""
     },
     errorMessage: null,
     statusMessages: []
@@ -22,10 +22,19 @@ export default (state = initialState, action) => {
                     opponent: action.opponent
                 }
             }
+        case "NEW_GAME_BEGIN":
+            return {
+                ...state,
+                accounts: {
+                    ...state.accounts,
+                    opponent: action.gameData.opponent
+                }
+            }
         case "WEB3_INIT":
             return {
                 ...state,
                 accounts: {
+                    ...state.accounts,
                     player: action.accounts[0]
                 }
             }

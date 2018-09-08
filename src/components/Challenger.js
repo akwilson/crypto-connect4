@@ -27,7 +27,7 @@ class Challenger extends Component {
             	</div>
             	<div className="row2">
                 	<label className="block">Opponent Account</label>
-                	<input id="oppAccount" type="text" onChange={e => this.opponentChange(e.target.value)}></input>
+                	<input id="oppAccount" type="text" onChange={e => this.opponentChange(e.target.value)} value={accounts.opponent}></input>
                 	<button id="btnNew" className="bc2" onClick={e => this.doChallenge()}>Challenge</button>
             	</div>
         	</fieldset>

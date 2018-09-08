@@ -7,7 +7,8 @@ const initialState = {
     game: {
         gameId: null,
         playerMoves: [],
-        opponentMoves: []
+        opponentMoves: [],
+        playerMove: true
     }
 }
 
@@ -18,7 +19,8 @@ export default (state = initialState, action) => {
                 ...state,
                 game: {
                     ...state.game,
-                    gameId: action.gameData.gameId
+                    gameId: action.gameData.gameId,
+                    playerMove: action.gameData.playerMove
                 }
             }
         case "NEXT_MOVE":
