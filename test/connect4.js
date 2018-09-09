@@ -41,7 +41,7 @@ contract('Connect4', accounts => {
             await instance.takeTurn(0, 9)
             assert.fail("Error not thrown")
         } catch(e) {
-            assert.equal(e.message, "VM Exception while processing transaction: revert")
+            assert.equal(e.message, "VM Exception while processing transaction: revert Illegal move")
         }
     })
     it("should reject if column is full", async () => {
@@ -57,7 +57,7 @@ contract('Connect4', accounts => {
             await instance.takeTurn(0, 0)
             assert.fail("Error not thrown")
         } catch(e) {
-            assert.equal(e.message, "VM Exception while processing transaction: revert")
+            assert.equal(e.message, "VM Exception while processing transaction: revert Column full")
         }
     })
     it("should detect game complete", async () => {
