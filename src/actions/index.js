@@ -45,6 +45,10 @@ export const highlightedGridCol = column => ({
     column
 })
 
+export const boardDeselect = () => ({
+    type: "BOARD_DESELECT"
+})
+
 export const initialiseWeb3 = () => {
     return dispatch => {
         return Connect4Web3.init()

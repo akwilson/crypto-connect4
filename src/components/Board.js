@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
-import { selectedGridCol, highlightedGridCol, nextMove } from "../actions"
+import { selectedGridCol, highlightedGridCol, nextMove, boardDeselect } from "../actions"
 
 import "./Board.css"
 
@@ -31,6 +31,10 @@ class Board extends Component {
 
     highlightColumn(col) {
         this.props.dispatch(highlightedGridCol(col))
+    }
+
+    boardMouseLeave() {
+        this.props.dispatch(boardDeselect())
     }
 
     takeTurn() {
@@ -90,7 +94,7 @@ class Board extends Component {
         return (
             <div id="gdiv">
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
-                    width={boardWidth * tileSize} height={boardHeight * tileSize}>
+                    width={boardWidth * tileSize} height={boardHeight * tileSize} onMouseLeave={e => this.boardMouseLeave()}>
                     {this.buildGrid(boardHeight, boardWidth, tileSize)}
                 </svg>
                 <div>

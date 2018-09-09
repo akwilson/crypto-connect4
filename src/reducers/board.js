@@ -15,6 +15,16 @@ export default (state = initialState, action) => {
                 ...state,
                 selectedCol: action.column
             }
+        case "BOARD_DESELECT":
+            return {
+                ...state,
+                highlightedCol: null
+            }
+        case "NEXT_MOVE_RECEIVED":
+            return {
+                ...state,
+                selectedCol: null
+            }
         default:
             return state
     }
