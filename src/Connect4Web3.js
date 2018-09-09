@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x5a7d0aaaa9f1eba23f22da09012f877fdf7549ee"
+const connect4Address = "0x9a40598adb8d4d32deeaad34dd85b4f43e873798"
 
 class Connect4Web3 extends EventEmitter {
     init() {
@@ -87,7 +87,12 @@ class Connect4Web3 extends EventEmitter {
             .on("data", event => {
                 const res = event.returnValues
                 console.log(`EVENT GameOver Id: ${res.gameId} Winner: ${res.winner}`)
-                this.emit("GAME_OVER_OK", res)
+                const gameData = {
+                    gameId: res.gameId,
+                    winner: res.winner
+                }
+
+                this.emit("GAME_OVER_OK", gameData)
             })
             .on("error", err => {
                 console.error("EVENT GameOver ERROR: " + err)

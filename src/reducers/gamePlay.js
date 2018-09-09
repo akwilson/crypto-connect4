@@ -8,7 +8,8 @@ const initialState = {
         gameId: null,
         playerMoves: [],
         opponentMoves: [],
-        playerMove: true
+        playerMove: true,
+        winner: null
     }
 }
 
@@ -36,6 +37,14 @@ export default (state = initialState, action) => {
                     playerMove: action.moveData.playerMove,
                     playerMoves: action.moveData.playerMove ? state.game.playerMoves : state.game.playerMoves.concat(mv),
                     opponentMoves: action.moveData.playerMove ? state.game.opponentMoves.concat(mv) : state.game.opponentMoves
+                }
+            }
+        case "GAME_OVER":
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    winner: action.gameData.winner
                 }
             }
         default:

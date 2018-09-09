@@ -12,7 +12,7 @@ class Status extends Component {
     render() {
         let index = 0
         const { statusMessages, errorMessage } = this.props
-        const sms = statusMessages.map(msg => <span key={index++}>{msg}</span>)
+        const sms = statusMessages.map(msg => <div key={index++}>{msg}</div>)
 
         return (
             <div>

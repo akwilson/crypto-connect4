@@ -16,6 +16,7 @@ const mapStoreToProps = store => {
         hCol: store.board.highlightedCol,
         sCol: store.board.selectedCol,
         gameId: store.gamePlay.game.gameId,
+        winner: store.gamePlay.game.winner,
         playerMove: store.gamePlay.game.playerMove,
         playerMoves: new Set(store.gamePlay.game.playerMoves.map(moveToString)),
         opponentMoves: new Set(store.gamePlay.game.opponentMoves.map(moveToString)),
@@ -74,13 +75,16 @@ class Board extends Component {
     }
 
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, playerMove } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner } = this.props
         if (gameId === null) {
-            return (
-                <div>
-                    Waiting for a game to begin. Try challenging someone...!
-                </div>
-            )
+            return (<div>Waiting for a game to begin. Try challenging someone...!</div>)
+        }
+
+        let control
+        if (winner) {
+            control = <span>Game over -- you {winner === player ? "win!" : "lose!"}</span>
+        } else {
+            control = <button id="btnTurn" onClick={e => this.takeTurn()} disabled={!playerMove}>Move</button>
         }
 
         return (
@@ -89,7 +93,9 @@ class Board extends Component {
                     width={boardWidth * tileSize} height={boardHeight * tileSize}>
                     {this.buildGrid(boardHeight, boardWidth, tileSize)}
                 </svg>
-                <div><button id="btnTurn" onClick={e => this.takeTurn()} disabled={!playerMove}>Move</button></div>
+                <div>
+                    {control}
+                </div>
                 <div>Game ID: <span id="gameId">{gameId}</span></div>
             </div>
         )
