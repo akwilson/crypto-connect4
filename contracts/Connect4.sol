@@ -23,50 +23,38 @@ contract Connect4 {
         return !_game.isOver && _x < boardWidth;
     }
 
-    function _isGameOver(Game _game, uint8 _x, uint8 _y) private view returns(bool) {
+    function _isOnBoard(int8 _x, int8 _y) private view returns(bool) {
+        return (_x >= 0 && _x < int8(boardWidth) && _y >= 0 && _y < int8(boardHeight));
+    }
+
+    function _findSame(Game _game, uint8 _x, uint8 _y, int8[4] _adjustments) private view returns(bool) {
         uint8 target = _game.usedTiles[_x][_y];
+        uint8 count = 1;
+        int8 nx = int8(_x) + _adjustments[0];
+        int8 ny = int8(_y) + _adjustments[1];
 
-        // right
-        if ((_x < boardWidth - winCount) &&
-            (_game.usedTiles[_x + 1][_y] == target) &&
-            (_game.usedTiles[_x + 2][_y] == target) &&
-            (_game.usedTiles[_x + 3][_y] == target)) {
-            return true;
+        while (_isOnBoard(nx, ny) && _game.usedTiles[uint8(nx)][uint8(ny)] == target) {
+            count++;
+            nx = nx + _adjustments[0];
+            ny = ny + _adjustments[1];
         }
 
-        // left
-        if ((_x >= winCount - 1) &&
-            (_game.usedTiles[_x - 1][_y] == target) &&
-            (_game.usedTiles[_x - 2][_y] == target) &&
-            (_game.usedTiles[_x - 3][_y] == target)) {
-            return true;
+        nx = int8(_x) + _adjustments[2];
+        ny = int8(_y) + _adjustments[3];
+        while (_isOnBoard(nx, ny) && _game.usedTiles[uint8(nx)][uint8(ny)] == target) {
+            count++;
+            nx = nx + _adjustments[2];
+            ny = ny + _adjustments[3];
         }
 
-        // down
-        if ((_y >= winCount - 1) &&
-            (_game.usedTiles[_x][_y - 1] == target) &&
-            (_game.usedTiles[_x][_y - 2] == target) &&
-            (_game.usedTiles[_x][_y - 3] == target)) {
-            return true;
-        }
+        return count >= winCount;
+    }
 
-        // down/right
-        if ((_x < boardWidth - winCount) && (_y >= winCount - 1) &&
-            (_game.usedTiles[_x + 1][_y - 1] == target) &&
-            (_game.usedTiles[_x + 2][_y - 2] == target) &&
-            (_game.usedTiles[_x + 3][_y - 3] == target)) {
-            return true;
-        }
-
-        // down/left
-        if ((_x >= winCount - 1) && (_y >= winCount - 1) &&
-            (_game.usedTiles[_x - 1][_y - 1] == target) &&
-            (_game.usedTiles[_x - 2][_y - 2] == target) &&
-            (_game.usedTiles[_x - 3][_y - 3] == target)) {
-            return true;
-        }
-
-        return false;
+    function _isGameOver(Game _game, uint8 _x, uint8 _y) private view returns(bool) {
+        return (_findSame(_game, _x, _y, [int8(-1), 0, 1, 0]) ||
+                _findSame(_game, _x, _y, [int8(-1), -1, 1, 1]) ||
+                _findSame(_game, _x, _y, [int8(-1), 1, 1, -1]) ||
+                _findSame(_game, _x, _y, [int8(0), -1, 0, 1]));
     }
 
     function newGame(address _player1, address _player2) public {
