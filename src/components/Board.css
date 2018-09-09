@@ -1,3 +1,5 @@
+#gdiv { margin: 15px 0px 0px 0px; }
+
 rect.r_on { fill:#006546; stroke-width:1; stroke:#3080d0; }
 rect.r_off { fill:#008d46; stroke-width:1; stroke:#3080d0; }
 rect.r_select { fill:#3080d0; stroke-width:1; stroke:#3080d0; }

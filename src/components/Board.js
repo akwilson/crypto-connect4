@@ -81,7 +81,7 @@ class Board extends Component {
     render() {
         const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner } = this.props
         if (gameId === null) {
-            return (<div>Waiting for a game to begin. Try challenging someone...!</div>)
+            return (<div id="gdiv">Waiting for a game to begin. Try challenging someone...!</div>)
         }
 
         let control
@@ -100,7 +100,7 @@ class Board extends Component {
                 <div>
                     {control}
                 </div>
-                <div>Game ID: <span id="gameId">{gameId}</span></div>
+                <div id="tbuff">Game ID: <span id="gameId">{gameId}</span></div>
             </div>
         )
     }

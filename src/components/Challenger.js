@@ -2,6 +2,8 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import { opponentChange, newGame } from "../actions"
 
+import "./Challenger.css"
+
 const mapStateToProps = state => {
     return { accounts: state.pageUI.accounts }
 }
@@ -20,14 +22,15 @@ class Challenger extends Component {
 
         return (
 			<fieldset>
-            	<legend>Game</legend>
+            	<legend>New Game</legend>
             	<div>
                 	<label className="block">Your Account</label>
                 	<span id="userAccount">{accounts.player}</span>
             	</div>
             	<div className="row2">
                 	<label className="block">Opponent Account</label>
-                	<input id="oppAccount" type="text" onChange={e => this.opponentChange(e.target.value)} value={accounts.opponent}></input>
+                	<input id="oppAccount" type="text" onChange={e => this.opponentChange(e.target.value)}
+                           size="45" value={accounts.opponent}></input>
                 	<button id="btnNew" className="bc2" onClick={e => this.doChallenge()}>Challenge</button>
             	</div>
         	</fieldset>

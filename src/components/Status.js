@@ -15,7 +15,7 @@ class Status extends Component {
         const sms = statusMessages.map(msg => <div key={index++}>{msg}</div>)
 
         return (
-            <div>
+            <div id="tbuff">
                 <div id="statusMsg">{sms}</div>
                 <div id="errorMsg">{errorMessage}</div>
             </div>
