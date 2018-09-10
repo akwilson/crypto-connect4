@@ -81,7 +81,7 @@ class Board extends Component {
     render() {
         const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner } = this.props
         if (gameId === null) {
-            return (<div id="gdiv">Waiting for a game to begin. Try challenging someone...!</div>)
+            return (<div>Waiting for a game to begin. Try challenging someone...!</div>)
         }
 
         let control
@@ -92,8 +92,7 @@ class Board extends Component {
         }
 
         return (
-            <div id="gdiv">
-                <div id="tbuff">Game ID: <span id="gameId">{gameId}</span></div>
+            <div>
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
                     width={boardWidth * tileSize} height={boardHeight * tileSize} onMouseLeave={e => this.boardMouseLeave()}>
                     {this.buildGrid(boardHeight, boardWidth, tileSize)}

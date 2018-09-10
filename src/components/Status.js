@@ -16,7 +16,9 @@ class Status extends Component {
         }
 
         let index = 0
-        const sms = statusMessages.map(msg => <tr key={index++}><td>{msg.sType}</td><td>{dateFormat(msg.date, "HH:MM:ss")}</td><td>{msg.message}</td></tr>)
+        const sms = statusMessages.map(msg => <tr key={index++}><td className="tdbuff">{msg.sType}</td>
+            <td className="tdbuff">{dateFormat(msg.date, "HH:MM:ss")}</td><td>{msg.message}</td></tr>)
+
         return (
             <table>
                 <thead>
@@ -33,7 +35,7 @@ class Status extends Component {
         const { statusMessages, errorMessage } = this.props
 
         return (
-            <div id="tbuff">
+            <div className="gcbuff">
                 {this.buildStatusTable(statusMessages)}
                 <div id="errorMsg">{errorMessage}</div>
             </div>
