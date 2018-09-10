@@ -12,7 +12,7 @@ export default (state = initialState, action) => {
         case "STATUS_APPEND":
             return {
                 ...state,
-                statusMessages: state.statusMessages.concat(action.message)
+                statusMessages: state.statusMessages.concat(action.status)
             }
         case "OPPONENT_CHANGE":
             return {

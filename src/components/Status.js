@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
+import dateFormat from "dateformat"
 
 const mapStateToProps = state => {
     return {
@@ -9,14 +10,31 @@ const mapStateToProps = state => {
 }
 
 class Status extends Component {
-    render() {
+    buildStatusTable(statusMessages) {
+        if (!statusMessages.length) {
+            return null
+        }
+
         let index = 0
+        const sms = statusMessages.map(msg => <tr key={index++}><td>{msg.sType}</td><td>{dateFormat(msg.date, "HH:MM:ss")}</td><td>{msg.message}</td></tr>)
+        return (
+            <table>
+                <thead>
+                    <tr><th colSpan="3">Transaction Receipts</th></tr>
+                </thead>
+                <tbody>
+                    {sms}
+                </tbody>
+            </table>
+        )
+    }
+
+    render() {
         const { statusMessages, errorMessage } = this.props
-        const sms = statusMessages.map(msg => <div key={index++}>{msg}</div>)
 
         return (
             <div id="tbuff">
-                <div id="statusMsg">{sms}</div>
+                {this.buildStatusTable(statusMessages)}
                 <div id="errorMsg">{errorMessage}</div>
             </div>
         )

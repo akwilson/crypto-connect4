@@ -5,27 +5,6 @@ import Connect4Contract from "Connect4"
 const connect4Address = "0x9a40598adb8d4d32deeaad34dd85b4f43e873798"
 
 class Connect4Web3 extends EventEmitter {
-    init() {
-		if (typeof web3 !== "undefined") {
-			this.web3js = new Web3(window.web3.currentProvider)
-		} else {
-			console.log("No web3? You should consider trying MetaMask!")
-			return Promise.reject(new Error("Missing web3"))
-		}
-
-        try {
-		    this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
-        } catch (err) {
-            return Promise.reject(err)
-        }
-
-		return this.web3js.eth.getAccounts()
-        	.then(accounts => {
-            	this._registerEvents(accounts[0])
-				return accounts
-        	})
-	}
-
 	_registerEvents(accountId) {
     	const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:8545"))
     	const connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, connect4Address)
@@ -99,6 +78,27 @@ class Connect4Web3 extends EventEmitter {
                 this.emit("GAME_ERROR", err)
             })
     }
+
+    init() {
+		if (typeof web3 !== "undefined") {
+			this.web3js = new Web3(window.web3.currentProvider)
+		} else {
+			console.log("No web3? You should consider trying MetaMask!")
+			return Promise.reject(new Error("Missing web3"))
+		}
+
+        try {
+		    this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
+        } catch (err) {
+            return Promise.reject(err)
+        }
+
+		return this.web3js.eth.getAccounts()
+        	.then(accounts => {
+            	this._registerEvents(accounts[0])
+				return accounts
+        	})
+	}
 
     newGame(player, opponent) {
         return new Promise((resolve, reject) => {

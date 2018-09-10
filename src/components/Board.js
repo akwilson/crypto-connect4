@@ -93,6 +93,7 @@ class Board extends Component {
 
         return (
             <div id="gdiv">
+                <div id="tbuff">Game ID: <span id="gameId">{gameId}</span></div>
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
                     width={boardWidth * tileSize} height={boardHeight * tileSize} onMouseLeave={e => this.boardMouseLeave()}>
                     {this.buildGrid(boardHeight, boardWidth, tileSize)}
@@ -100,7 +101,6 @@ class Board extends Component {
                 <div>
                     {control}
                 </div>
-                <div id="tbuff">Game ID: <span id="gameId">{gameId}</span></div>
             </div>
         )
     }

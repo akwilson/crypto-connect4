@@ -1,8 +1,12 @@
 import Connect4Web3 from "../Connect4Web3"
 
-export const statusAppend = message => ({
+export const statusAppend = (sType, date, message) => ({
     type: "STATUS_APPEND",
-    message
+    status: {
+        sType,
+        date,
+        message
+    }
 })
 
 export const newGameBegin = gameData => ({
@@ -60,7 +64,7 @@ export const initialiseWeb3 = () => {
 export const newGame = players => {
     return dispatch => {
         return Connect4Web3.newGame(players.player, players.opponent)
-            .then(receipt => dispatch(statusAppend(receipt.transactionHash)))
+            .then(receipt => dispatch(statusAppend("New Game", new Date(), receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }
 }
@@ -68,7 +72,7 @@ export const newGame = players => {
 export const nextMove = moveData => {
     return dispatch => {
         return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
-            .then(receipt => dispatch(statusAppend(receipt.transactionHash)))
+            .then(receipt => dispatch(statusAppend("Next Move", new Date(), receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }
 }
