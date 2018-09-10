@@ -60,8 +60,10 @@ class Board extends Component {
             cName = "r_on"
         }
 
+        const xMargin = (col % this.props.boardWidth ? 5 : 0) * col
+        const yMargin = (row % this.props.boardHeight ? 5 : 0) * row
         return (
-            <rect key={index} className={cName} x={col * tileSize} y={row * tileSize} width={tileSize} height={tileSize}
+            <circle key={index} className={cName} cx={(col * tileSize * 2) + tileSize + xMargin} cy={(row * tileSize * 2) + tileSize + yMargin} r={tileSize}
                 onClick={e => this.selectColumn(col)} onMouseOver={e => this.highlightColumn(col)}/>
         )
     }
@@ -86,20 +88,27 @@ class Board extends Component {
 
         let control
         if (winner) {
-            control = <span>Game over -- you {winner === player ? "win!" : "lose!"}</span>
+            control = <div><span>Game over -- you {winner === player ? "win!" : "lose!"}</span></div>
+        } else if (playerMove) {
+            control = (
+                <div>
+                    <div>
+                        Your move, select a column.
+                    </div>
+                    <button id="btnTurn" onClick={e => this.takeTurn()}>Move</button>
+                </div>
+            )
         } else {
-            control = <button id="btnTurn" onClick={e => this.takeTurn()} disabled={!playerMove}>Move</button>
+            control = <div>Waiting for opponent...</div>
         }
 
         return (
             <div>
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
-                    width={boardWidth * tileSize} height={boardHeight * tileSize} onMouseLeave={e => this.boardMouseLeave()}>
+                    width={(boardWidth * tileSize * 2) + boardWidth * 5} height={(boardHeight * tileSize * 2) + boardHeight * 5} onMouseLeave={e => this.boardMouseLeave()}>
                     {this.buildGrid(boardHeight, boardWidth, tileSize)}
                 </svg>
-                <div>
-                    {control}
-                </div>
+                {control}
             </div>
         )
     }

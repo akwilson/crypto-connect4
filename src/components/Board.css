@@ -1,5 +1,11 @@
-rect.r_on { fill:#006546; stroke-width:1; stroke:#3080d0; }
-rect.r_off { fill:#008d46; stroke-width:1; stroke:#3080d0; }
-rect.r_select { fill:#3080d0; stroke-width:1; stroke:#3080d0; }
-rect.r_usr { fill:#ff3333; stroke-width:1; stroke:#3080d0; }
-rect.r_opp { fill:#ecff23; stroke-width:1; stroke:#3080d0; }
+circle.r_on { fill:#006546; }
+circle.r_off { fill:#008d46; }
+circle.r_select { fill:#3080d0; }
+circle.r_usr { fill:#ff3333; }
+circle.r_opp { fill:#ecff23; }
+
+#btnTurn {
+    width: 120px;
+    height: 25px;
+    margin: 5px 0px 0px 0px;
+}
