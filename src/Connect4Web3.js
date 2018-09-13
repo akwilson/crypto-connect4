@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x9a40598adb8d4d32deeaad34dd85b4f43e873798"
+const connect4Address = "0x5b67af47c96e5a17fad43f9673d6c2aa9898b788"
 
 class Connect4Web3 extends EventEmitter {
 	_registerEvents(accountId) {

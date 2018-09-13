@@ -18,15 +18,23 @@ const mapStoreToProps = store => {
         gameId: store.gamePlay.game.gameId,
         winner: store.gamePlay.game.winner,
         playerMove: store.gamePlay.game.playerMove,
-        playerMoves: new Set(store.gamePlay.game.playerMoves.map(moveToString)),
-        opponentMoves: new Set(store.gamePlay.game.opponentMoves.map(moveToString)),
+        playerMoves: store.gamePlay.game.playerMoves,
+        opponentMoves: store.gamePlay.game.opponentMoves,
         player: store.pageUI.accounts.player
     }
 }
 
 class Board extends Component {
     selectColumn(col) {
-        this.props.dispatch(selectedGridCol(col))
+        if (col === this.props.sCol) {
+            this.props.dispatch(selectedGridCol(null))
+        } else {
+            const pc = this.props.playerMoves.filter(m => m.col === col)
+            const oc = this.props.opponentMoves.filter(m => m.col === col)
+            if (pc.length + oc.length < this.props.boardHeight) {
+                this.props.dispatch(selectedGridCol(col))
+            }
+        }
     }
 
     highlightColumn(col) {
@@ -47,12 +55,12 @@ class Board extends Component {
         this.props.dispatch(nextMove(moveData))
     }
 
-    makeTile(index, row, col, tileSize) {
+    makeTile(index, row, col, tileSize, playerMovesSet, opponentMovesSet) {
         const move = moveToString({row: 5 - row, col})
         let cName = "r_off"
-        if (this.props.playerMoves.has(move)) {
+        if (playerMovesSet.has(move)) {
             cName = "r_usr"
-        } else if (this.props.opponentMoves.has(move)) {
+        } else if (opponentMovesSet.has(move)) {
             cName = "r_opp"
         } else if (this.props.sCol === col) {
             cName = "r_select"
@@ -69,11 +77,14 @@ class Board extends Component {
     }
 
     buildGrid(height, width, tileSize) {
+        const playerMovesSet = new Set(this.props.playerMoves.map(moveToString))
+        const opponentMovesSet = new Set(this.props.opponentMoves.map(moveToString))
         const tiles = []
+
         let index = 0
         for (let i = 0; i < height; i++) {
             for (let j = 0; j < width; j++) {
-                tiles.push(this.makeTile(index++, i, j, tileSize))
+                tiles.push(this.makeTile(index++, i, j, tileSize, playerMovesSet, opponentMovesSet))
             }
         }
 
@@ -81,7 +92,7 @@ class Board extends Component {
     }
 
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner, sCol } = this.props
         if (gameId === null) {
             return (<div>Waiting for a game to begin. Try challenging someone...!</div>)
         }
@@ -95,7 +106,7 @@ class Board extends Component {
                     <div>
                         Your move, select a column.
                     </div>
-                    <button id="btnTurn" onClick={e => this.takeTurn()}>Move</button>
+                    <button id="btnTurn" onClick={e => this.takeTurn()} disabled={sCol === null}>Move</button>
                 </div>
             )
         } else {
