@@ -13,6 +13,7 @@ const mapStoreToProps = store => {
         boardHeight: store.gamePlay.boardDef.height,
         boardWidth: store.gamePlay.boardDef.width,
         tileSize: store.gamePlay.boardDef.tileSize,
+        tileMargin: store.gamePlay.boardDef.tileMargin,
         hCol: store.board.highlightedCol,
         sCol: store.board.selectedCol,
         gameId: store.gamePlay.game.gameId,
@@ -55,36 +56,41 @@ class Board extends Component {
         this.props.dispatch(nextMove(moveData))
     }
 
-    makeTile(index, row, col, tileSize, playerMovesSet, opponentMovesSet) {
-        const move = moveToString({row: 5 - row, col})
+    makeTile(index, row, col, playerMovesSet, opponentMovesSet) {
+        const { tileSize, tileMargin, boardHeight, boardWidth, sCol, hCol } = this.props
+
+        // Flip row value so that tiles stack up from the bottom of the board 
+        const move = moveToString({row: (boardHeight - 1) - row, col})
         let cName = "r_off"
         if (playerMovesSet.has(move)) {
             cName = "r_usr"
         } else if (opponentMovesSet.has(move)) {
             cName = "r_opp"
-        } else if (this.props.sCol === col) {
+        } else if (sCol === col) {
             cName = "r_select"
-        } else if (this.props.hCol === col) {
+        } else if (hCol === col) {
             cName = "r_on"
         }
 
-        const xMargin = (col % this.props.boardWidth ? 5 : 0) * col
-        const yMargin = (row % this.props.boardHeight ? 5 : 0) * row
+        const colMargin = (col % boardWidth ? tileMargin : 0) * col
+        const rowMargin = (row % boardHeight ? tileMargin : 0) * row
         return (
-            <circle key={index} className={cName} cx={(col * tileSize * 2) + tileSize + xMargin} cy={(row * tileSize * 2) + tileSize + yMargin} r={tileSize}
+            <circle key={index} className={cName} cx={(col * tileSize * 2) + tileSize + colMargin}
+                cy={(row * tileSize * 2) + tileSize + rowMargin} r={tileSize}
                 onClick={e => this.selectColumn(col)} onMouseOver={e => this.highlightColumn(col)}/>
         )
     }
 
-    buildGrid(height, width, tileSize) {
+    buildGrid() {
+        const { boardWidth, boardHeight, tileSize } = this.props
         const playerMovesSet = new Set(this.props.playerMoves.map(moveToString))
         const opponentMovesSet = new Set(this.props.opponentMoves.map(moveToString))
         const tiles = []
 
         let index = 0
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                tiles.push(this.makeTile(index++, i, j, tileSize, playerMovesSet, opponentMovesSet))
+        for (let i = 0; i < boardHeight; i++) {
+            for (let j = 0; j < boardWidth; j++) {
+                tiles.push(this.makeTile(index++, i, j, playerMovesSet, opponentMovesSet))
             }
         }
 
@@ -92,20 +98,18 @@ class Board extends Component {
     }
 
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner, sCol } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner, sCol, tileMargin } = this.props
         if (gameId === null) {
-            return (<div>Waiting for a game to begin. Try challenging someone...!</div>)
+            return (<h4>Waiting for a game to begin. Try challenging someone...!</h4>)
         }
 
         let control
         if (winner) {
-            control = <div><span>Game over -- you {winner === player ? "win!" : "lose!"}</span></div>
+            control = <div>Game over -- you {winner === player ? "win!" : "lose!"}</div>
         } else if (playerMove) {
             control = (
                 <div>
-                    <div>
-                        Your move, select a column.
-                    </div>
+                    <div>Your move, select a column.</div>
                     <button id="btnTurn" onClick={e => this.takeTurn()} disabled={sCol === null}>Move</button>
                 </div>
             )
@@ -116,8 +120,10 @@ class Board extends Component {
         return (
             <div>
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
-                    width={(boardWidth * tileSize * 2) + boardWidth * 5} height={(boardHeight * tileSize * 2) + boardHeight * 5} onMouseLeave={e => this.boardMouseLeave()}>
-                    {this.buildGrid(boardHeight, boardWidth, tileSize)}
+                    width={(boardWidth * tileSize * 2) + boardWidth * tileMargin}
+                    height={(boardHeight * tileSize * 2) + boardHeight * tileMargin}
+                    onMouseLeave={e => this.boardMouseLeave()}>
+                    {this.buildGrid()}
                 </svg>
                 {control}
             </div>

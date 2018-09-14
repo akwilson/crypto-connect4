@@ -2,7 +2,8 @@ const initialState = {
     boardDef: {
         height: 6,
         width: 7,
-        tileSize: 30
+        tileSize: 30,
+        tileMargin: 5
     },
     game: {
         gameId: null,
