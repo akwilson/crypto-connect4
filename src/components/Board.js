@@ -82,7 +82,7 @@ class Board extends Component {
     }
 
     buildGrid() {
-        const { boardWidth, boardHeight, tileSize } = this.props
+        const { boardWidth, boardHeight } = this.props
         const playerMovesSet = new Set(this.props.playerMoves.map(moveToString))
         const opponentMovesSet = new Set(this.props.opponentMoves.map(moveToString))
         const tiles = []
