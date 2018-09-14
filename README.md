@@ -1,4 +1,4 @@
-#Crypto Connect 4
+# Crypto Connect 4
 ```
 $ npm install
 $ cd node_modules/
@@ -6,7 +6,9 @@ $ ln -s ../build/contracts/Connect4.js Connect4
 $ cd ..
 ```
 Start Ganache
-`$ ganache-cli`
+```
+$ ganache-cli
+```
 Deploy the smart contract
 ```
 $ truffle compile
@@ -20,5 +22,7 @@ Running migration: 2_deploy_contracts.js
   Connect4: 0x6339da0d80fe011f8d0c3eff79d6e5ec68e0c419
 ```
 Contract address is 0x6339da0d80fe011f8d0c3eff79d6e5ec68e0c419
-`$ npm start`
+```
+$ npm start
+```
 Navigate to localhost:3000
