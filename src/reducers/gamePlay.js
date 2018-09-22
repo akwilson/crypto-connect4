@@ -10,7 +10,9 @@ const initialState = {
         playerMoves: [],
         opponentMoves: [],
         playerMove: true,
-        winner: null
+        winner: null,
+        resigner: null,
+        isDraw: false
     }
 }
 
@@ -46,6 +48,22 @@ export default (state = initialState, action) => {
                 game: {
                     ...state.game,
                     winner: action.gameData.winner
+                }
+            }
+        case "GAME_RESIGNED":
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    resigner: action.gameData.resigner
+                }
+            }
+        case "GAME_DRAWN":
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    isDraw: true
                 }
             }
         default:

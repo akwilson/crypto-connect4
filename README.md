@@ -2,7 +2,7 @@
 ```
 $ npm install
 $ cd node_modules/
-$ ln -s ../build/contracts/Connect4.js Connect4
+$ ln -s ../build/contracts/Connect4.json Connect4
 $ cd ..
 ```
 Start Ganache

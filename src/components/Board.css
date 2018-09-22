@@ -4,7 +4,13 @@ circle.r_select { fill:#3080d0; }
 circle.r_usr { fill:#ff3333; }
 circle.r_opp { fill:#ecff23; }
 
-#btnTurn {
+#btnResign {
+    width: 120px;
+    height: 25px;
+    margin: 0px 0px 5px 0px;
+}
+
+#btnMove {
     width: 120px;
     height: 25px;
     margin: 5px 0px 0px 0px;

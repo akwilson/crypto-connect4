@@ -18,6 +18,14 @@ export default store => {
         store.dispatch(actions.gameOver(gameData))
     })
 
+    c4Web3.on("GAME_RESIGNED_OK", gameData => {
+        store.dispatch(actions.gameResigned(gameData))
+    })
+
+    c4Web3.on("GAME_DRAW_OK", gameData => {
+        store.dispatch(actions.gameDrawn(gameData))
+    })
+
 	return next => action => {
 		next(action)
 	}

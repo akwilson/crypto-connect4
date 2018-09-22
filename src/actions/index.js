@@ -19,6 +19,16 @@ export const gameOver = gameData => ({
     gameData
 })
 
+export const gameResigned = gameData => ({
+    type: "GAME_RESIGNED",
+    gameData
+})
+
+export const gameDrawn = gameData => ({
+    type: "GAME_DRAWN",
+    gameData
+})
+
 export const opponentChange = opponent => ({
     type: "OPPONENT_CHANGE",
     opponent
@@ -73,6 +83,14 @@ export const nextMove = moveData => {
     return dispatch => {
         return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
             .then(receipt => dispatch(statusAppend("Next Move", new Date(), receipt.transactionHash)))
+            .catch(err => dispatch(errorAction(err)))
+    }
+}
+
+export const resignGame = resignData => {
+    return dispatch => {
+        return Connect4Web3.resignGame(resignData.player, resignData.gameId)
+            .then(receipt => dispatch(statusAppend("Resigned", new Date(), receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }
 }

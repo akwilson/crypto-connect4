@@ -2,7 +2,9 @@ pragma solidity ^0.4.23;
 
 contract Connect4 {
     event NextMove(uint indexed gameId, address player, uint8 x, uint8 y);
-    event GameOver(uint indexed gameId, address winner);
+    event Victory(uint indexed gameId, address winner);
+    event Resigned(uint indexed gameId, address resigner);
+    event Draw(uint indexed gameId);
     event NewGame(address indexed player1, address indexed player2, uint gameId);
 
     uint boardWidth = 7;
@@ -90,11 +92,17 @@ contract Connect4 {
         emit NextMove(_gameId, msg.sender, _x, y);
         if (_isGameOver(game, _x, y)) {
             game.isOver = true;
-            emit GameOver(_gameId, msg.sender);
+            emit Victory(_gameId, msg.sender);
         }
 
         // V2
         // make payable
+    }
+
+    function resignGame(uint _gameId) public {
+        Game storage game = games[_gameId];
+        game.isOver = true;
+        emit Resigned(_gameId, msg.sender);
     }
 
     function getBoard(uint _gameId) public view returns(uint8[6][7]) {

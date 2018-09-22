@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
-import { selectedGridCol, highlightedGridCol, nextMove, boardDeselect } from "../actions"
+import { selectedGridCol, highlightedGridCol, nextMove, boardDeselect, resignGame } from "../actions"
 
 import "./Board.css"
 
@@ -18,6 +18,8 @@ const mapStoreToProps = store => {
         sCol: store.board.selectedCol,
         gameId: store.gamePlay.game.gameId,
         winner: store.gamePlay.game.winner,
+        resigner: store.gamePlay.game.resigner,
+        isDraw: store.gamePlay.game.isDraw,
         playerMove: store.gamePlay.game.playerMove,
         playerMoves: store.gamePlay.game.playerMoves,
         opponentMoves: store.gamePlay.game.opponentMoves,
@@ -54,6 +56,16 @@ class Board extends Component {
         }
 
         this.props.dispatch(nextMove(moveData))
+    }
+
+    resignGame() {
+        console.log("resign pressed")
+        if (window.confirm("Resign game, are you sure?")) {
+            this.props.dispatch(resignGame({
+                player: this.props.player,
+                gameId: this.props.gameId
+            }))
+        }
     }
 
     makeTile(index, row, col, playerMovesSet, opponentMovesSet) {
@@ -97,20 +109,37 @@ class Board extends Component {
         return (tiles)
     }
 
+    makeGameOverDisplay() {
+        const { player, winner, resigner, isDraw } = this.props
+
+        if (winner) {
+            return <div>Game over -- you {winner === player ? "win!" : "lose!"}</div>
+        } else if (resigner) {
+            return <div>Game over -- you {resigner !== player ? "win!" : "lose!"} {resigner !== player ? "Opponent" : "You"} resigned.</div>
+        } 
+
+        return <div>Game drawn!</div>
+    }
+
+    isGameOver() {
+        const { player, winner, resigner, isDraw } = this.props
+        return winner || resigner || isDraw
+    }
+
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, winner, sCol, tileMargin } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, sCol, tileMargin } = this.props
         if (gameId === null) {
             return (<h4>Waiting for a game to begin. Try challenging someone...!</h4>)
         }
 
         let control
-        if (winner) {
-            control = <div>Game over -- you {winner === player ? "win!" : "lose!"}</div>
+        if (this.isGameOver()) {
+            control = this.makeGameOverDisplay()
         } else if (playerMove) {
             control = (
                 <div>
                     <div>Your move, select a column.</div>
-                    <button id="btnTurn" onClick={e => this.takeTurn()} disabled={sCol === null}>Move</button>
+                    <button id="btnMove" onClick={e => this.takeTurn()} disabled={sCol === null}>Move</button>
                 </div>
             )
         } else {
@@ -119,6 +148,7 @@ class Board extends Component {
 
         return (
             <div>
+                <div><button id="btnResign" onClick={e => this.resignGame()} disabled={this.isGameOver()}>Resign</button></div>
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
                     width={(boardWidth * tileSize * 2) + boardWidth * tileMargin}
                     height={(boardHeight * tileSize * 2) + boardHeight * tileMargin}
