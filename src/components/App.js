@@ -3,8 +3,8 @@ import { connect } from "react-redux"
 
 import HeaderBar from "./HeaderBar"
 import Challenger from "./Challenger"
-import Board from "./Board"
-import Status from "./Status"
+import BoardTabs from "./BoardTabs"
+import GameContainer from "./GameContainer"
 //HACK
 //import { initialiseWeb3, statusAppend, newGameBegin } from "../actions"
 import { initialiseWeb3 } from "../actions"
@@ -27,10 +27,8 @@ class App extends Component {
             <div>
                 <HeaderBar/>
                 <Challenger/>
-                <div id="gameContainer">
-                    <Board/>
-                    <Status/>
-                </div>
+                <BoardTabs/>
+                <GameContainer/>
             </div>
         )
     }

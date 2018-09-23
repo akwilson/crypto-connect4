@@ -9,13 +9,21 @@ const moveToString = move => {
 }
 
 const mapStoreToProps = store => {
+    const selectedGame = store.gamePlay.selectedGame
+    const game = selectedGame ? store.gamePlay.games[selectedGame] : null
+
     return {
+        ...game,
         boardHeight: store.gamePlay.boardDef.height,
         boardWidth: store.gamePlay.boardDef.width,
-        tileSize: store.gamePlay.boardDef.tileSize,
         tileMargin: store.gamePlay.boardDef.tileMargin,
-        hCol: store.board.highlightedCol,
+        tileSize: store.gamePlay.boardDef.tileSize,
+
         sCol: store.board.selectedCol,
+        hCol: store.board.highlightedCol,
+
+        player: store.pageUI.accounts.player
+/*
         gameId: store.gamePlay.game.gameId,
         winner: store.gamePlay.game.winner,
         resigner: store.gamePlay.game.resigner,
@@ -23,7 +31,7 @@ const mapStoreToProps = store => {
         playerMove: store.gamePlay.game.playerMove,
         playerMoves: store.gamePlay.game.playerMoves,
         opponentMoves: store.gamePlay.game.opponentMoves,
-        player: store.pageUI.accounts.player
+        */
     }
 }
 
@@ -128,8 +136,8 @@ class Board extends Component {
 
     render() {
         const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, sCol, tileMargin } = this.props
-        if (gameId === null) {
-            return (<h4>Waiting for a game to begin. Try challenging someone...!</h4>)
+        if (!gameId) {
+            return null
         }
 
         let control

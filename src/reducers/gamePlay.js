@@ -5,67 +5,109 @@ const initialState = {
         tileSize: 30,
         tileMargin: 5
     },
-    game: {
-        gameId: null,
-        playerMoves: [],
-        opponentMoves: [],
-        playerMove: true,
-        winner: null,
-        resigner: null,
-        isDraw: false
-    }
+    games: null,
+    selectedGame: null
+}
+
+const newGameState = {
+    gameId: null,
+    playerMoves: [],
+    opponentMoves: [],
+    playerMove: true,
+    winner: null,
+    resigner: null,
+    isDraw: false
 }
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case "NEW_GAME_BEGIN":
+        case "SWITCH_GAME":
             return {
                 ...state,
-                game: {
-                    ...state.game,
-                    gameId: action.gameData.gameId,
-                    playerMove: action.gameData.playerMove
-                }
+                selectedGame: action.selected
             }
-        case "NEXT_MOVE_RECEIVED":
+        case "NEW_GAME_BEGIN": {
+            const num = state.games ? Object.keys(state.games).length + 1 : 1
+            const ng = {
+                ...newGameState,
+                gameId: action.gameData.gameId,
+                playerMove: action.gameData.playerMove,
+                title: `Game ${num}`
+            }
+
+            return {
+                ...state,
+                games: {
+                    ...state.games,
+                    [action.gameData.gameId]: ng
+                },
+                selectedGame: action.gameData.gameId
+            }
+        }
+        case "NEXT_MOVE_RECEIVED": {
             const mv = {
                 row: action.moveData.y,
                 col: action.moveData.x
             }
 
+            const currGame = state.games[action.moveData.gameId]
+            const game = {
+                ...currGame,
+                playerMove: action.moveData.playerMove,
+                playerMoves: action.moveData.playerMove ? currGame.playerMoves : currGame.playerMoves.concat(mv),
+                opponentMoves: action.moveData.playerMove ? currGame.opponentMoves.concat(mv) : currGame.opponentMoves
+            }
+
             return {
                 ...state,
-                game: {
-                    ...state.game,
-                    playerMove: action.moveData.playerMove,
-                    playerMoves: action.moveData.playerMove ? state.game.playerMoves : state.game.playerMoves.concat(mv),
-                    opponentMoves: action.moveData.playerMove ? state.game.opponentMoves.concat(mv) : state.game.opponentMoves
-                }
+                games: {
+                    ...state.games,
+                    [action.moveData.gameId]: game
+                },
             }
-        case "GAME_OVER":
+        }
+        case "GAME_OVER": {
+            const game = {
+                ...state.games[action.gameData.gameId],
+                winner: action.gameData.winner
+            }
+
             return {
                 ...state,
-                game: {
-                    ...state.game,
-                    winner: action.gameData.winner
+                games: {
+                    ...state.games,
+                    [action.gameData.gameId]: game
                 }
             }
-        case "GAME_RESIGNED":
+        }
+        case "GAME_RESIGNED": {
+            const game = {
+                ...state.games[action.gameData.gameId],
+                resigner: action.gameData.resigner
+            }
+
             return {
                 ...state,
-                game: {
-                    ...state.game,
-                    resigner: action.gameData.resigner
+                games: {
+                    ...state.games,
+                    [action.gameData.gameId]: game
                 }
             }
-        case "GAME_DRAWN":
+        }
+        case "GAME_DRAWN": {
+            const game = {
+                ...state.games[action.gameData.gameId],
+                isDraw: true
+            }
+
             return {
                 ...state,
-                game: {
-                    ...state.game,
-                    isDraw: true
+                games: {
+                    ...state.games,
+                    [action.gameData.gameId]: game
                 }
             }
+        }
         default:
             return state
     }

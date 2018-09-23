@@ -1,5 +1,10 @@
 import Connect4Web3 from "../Connect4Web3"
 
+export const switchGame = gameId => ({
+    type: "SWITCH_GAME",
+    selected: gameId
+})
+
 export const statusAppend = (sType, date, message) => ({
     type: "STATUS_APPEND",
     status: {

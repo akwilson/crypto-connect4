@@ -27,12 +27,6 @@
   to { transform: rotate(360deg); }
 }
 
-#gameContainer {
-    display: flex;
-    justify-content: center;
-    margin: 10px 0px 0px 0px;
-}
-
 .gcbuff {
     margin: 0px 0px 0px 30px;
 }
