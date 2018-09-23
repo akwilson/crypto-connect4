@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x9a32281b90e4a366a50e0169ed7c0a11e8f455bc"
+const connect4Address = "0xac99e37429d5d5907a19d1206bd98f6815768aab"
 
 class Connect4Web3 extends EventEmitter {
     _newGameOk(event, playerMove) {
@@ -98,9 +98,8 @@ class Connect4Web3 extends EventEmitter {
 
     	this.connect4Events.events.NewGame({filter: {player2: this.accountId}})
         	.on("data", event => {
-            	console.log("PLAYER2")
             	const ngd = this._newGameOk(event, false)
-				this.emit("NEW_GAME_OK", ngd)
+				this.emit("CHALLENGE_ACCEPTED", ngd)
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)

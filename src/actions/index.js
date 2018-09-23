@@ -5,13 +5,30 @@ export const switchGame = gameId => ({
     selected: gameId
 })
 
-export const statusAppend = (sType, date, message) => ({
+export const statusAppend = (gameId, sType, date, message) => ({
     type: "STATUS_APPEND",
+    statusData: {
+        gameId: gameId,
+        status: {
+            sType,
+            date,
+            message
+        }
+    }
+})
+
+export const newGameReceipt = (sType, date, message) => ({
+    type: "NEW_GAME_RECEIPT",
     status: {
         sType,
         date,
         message
     }
+})
+
+export const challengeAccepted = gameData => ({
+    type: "CHALLENGE_ACCEPTED",
+    gameData
 })
 
 export const newGameBegin = gameData => ({
@@ -79,7 +96,7 @@ export const initialiseWeb3 = () => {
 export const newGame = players => {
     return dispatch => {
         return Connect4Web3.newGame(players.player, players.opponent)
-            .then(receipt => dispatch(statusAppend("New Game", new Date(), receipt.transactionHash)))
+            .then(receipt => dispatch(newGameReceipt("New Game", new Date(), receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }
 }
@@ -87,7 +104,7 @@ export const newGame = players => {
 export const nextMove = moveData => {
     return dispatch => {
         return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
-            .then(receipt => dispatch(statusAppend("Next Move", new Date(), receipt.transactionHash)))
+            .then(receipt => dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }
 }
@@ -95,7 +112,7 @@ export const nextMove = moveData => {
 export const resignGame = resignData => {
     return dispatch => {
         return Connect4Web3.resignGame(resignData.player, resignData.gameId)
-            .then(receipt => dispatch(statusAppend("Resigned", new Date(), receipt.transactionHash)))
+            .then(receipt => dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), receipt.transactionHash)))
             .catch(err => dispatch(errorAction(err)))
     }
 }

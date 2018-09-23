@@ -2,10 +2,13 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import dateFormat from "dateformat"
 
-const mapStateToProps = state => {
+const mapStateToProps = store => {
+    const selectedGame = store.gamePlay.selectedGame
+    const game = selectedGame && store.gamePlay.games ? store.gamePlay.games[selectedGame] : null
+
     return {
-        errorMessage: state.pageUI.errorMessage,
-        statusMessages: state.pageUI.statusMessages
+        errorMessage: game ? game.errorMessage : "",
+        statusMessages: game ? game.statusMessages : []
     }
 }
 

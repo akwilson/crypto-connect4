@@ -10,7 +10,7 @@ const moveToString = move => {
 
 const mapStoreToProps = store => {
     const selectedGame = store.gamePlay.selectedGame
-    const game = selectedGame ? store.gamePlay.games[selectedGame] : null
+    const game = selectedGame && store.gamePlay.games ? store.gamePlay.games[selectedGame] : null
 
     return {
         ...game,
@@ -23,15 +23,6 @@ const mapStoreToProps = store => {
         hCol: store.board.highlightedCol,
 
         player: store.pageUI.accounts.player
-/*
-        gameId: store.gamePlay.game.gameId,
-        winner: store.gamePlay.game.winner,
-        resigner: store.gamePlay.game.resigner,
-        isDraw: store.gamePlay.game.isDraw,
-        playerMove: store.gamePlay.game.playerMove,
-        playerMoves: store.gamePlay.game.playerMoves,
-        opponentMoves: store.gamePlay.game.opponentMoves,
-        */
     }
 }
 
@@ -67,7 +58,6 @@ class Board extends Component {
     }
 
     resignGame() {
-        console.log("resign pressed")
         if (window.confirm("Resign game, are you sure?")) {
             this.props.dispatch(resignGame({
                 player: this.props.player,

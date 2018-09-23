@@ -6,6 +6,10 @@ export default store => {
         store.dispatch(actions.newGameBegin(newGameData))
     })
 
+    c4Web3.on("CHALLENGE_ACCEPTED", newGameData => {
+        store.dispatch(actions.challengeAccepted(newGameData))
+    })
+
     c4Web3.on("GAME_ERROR", error => {
         store.dispatch(actions.errorAction(error))
     })
