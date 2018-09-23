@@ -20,6 +20,7 @@ contract Connect4 {
     }
 
     Game[] public games;
+    mapping(address => uint) activeGames;
 
     function _isLegalMove(Game _game, uint8 _x) private view returns(bool) {
         return !_game.isOver && _x < boardWidth;
@@ -67,6 +68,9 @@ contract Connect4 {
         game.isPlayer1Next = true;
 
         uint id = games.push(game) - 1;
+        activeGames[_player1]++;
+        activeGames[_player2]++;
+
         emit NewGame(game.player1, game.player2, id);
     }
 
@@ -92,6 +96,9 @@ contract Connect4 {
         emit NextMove(_gameId, msg.sender, _x, y);
         if (_isGameOver(game, _x, y)) {
             game.isOver = true;
+            activeGames[game.player1]--;
+            activeGames[game.player2]--;
+
             emit Victory(_gameId, msg.sender);
         }
 
@@ -102,10 +109,27 @@ contract Connect4 {
     function resignGame(uint _gameId) public {
         Game storage game = games[_gameId];
         game.isOver = true;
+        activeGames[game.player1]--;
+        activeGames[game.player2]--;
         emit Resigned(_gameId, msg.sender);
     }
 
     function getBoard(uint _gameId) public view returns(uint8[6][7]) {
         return games[_gameId].usedTiles;
+    }
+
+    function getGamesByPlayer() public view returns(uint[]) {
+        uint[] memory result = new uint[](activeGames[msg.sender]);
+        Game memory game;
+        uint counter = 0;
+        for (uint i = 0; i < games.length; i++) {
+            game = games[i];
+            if (!game.isOver && (game.player1 == msg.sender || game.player2 == msg.sender)) {
+                result[counter] = i;
+                counter++;
+            }
+        }
+
+        return result;
     }
 }

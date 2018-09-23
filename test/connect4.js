@@ -61,11 +61,30 @@ contract('Connect4', accounts => {
                 assert.equal(e.message, "VM Exception while processing transaction: revert Column full")
             }
         })
+        it("getBoard for single game", async () => {
+            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[0], accounts[2])
+
+            let result = await instance.getGamesByPlayer({from: accounts[0]})
+            assert.equal(result.length, 2, "Player 1 should have two games")
+            assert.equal(result[0], 0, "Player 1 plays in game 0")
+            assert.equal(result[1], 1, "Player 1 plays in game 1")
+
+            result = await instance.getGamesByPlayer({from: accounts[1]})
+            assert.equal(result.length, 1, "Player 2 should have one game")
+            assert.equal(result[0], 0, "Player 2 plays in game 0")
+
+            result = await instance.getGamesByPlayer({from: accounts[2]})
+            assert.equal(result.length, 1, "Player 3 should have one game")
+            assert.equal(result[0], 1, "Player 3 plays in game 1")
+        })
     })
 
     contract("Detect end game", () => {
         it("detect game complete, vertical", async () => {
             await instance.newGame(accounts[0], accounts[1])
+            // used to test getGamesByPlayer()
+            await instance.newGame(accounts[0], accounts[2])
 
             await instance.takeTurn(0, 0)
             await instance.takeTurn(0, 1, {from: accounts[1]})
@@ -73,12 +92,26 @@ contract('Connect4', accounts => {
             await instance.takeTurn(0, 1, {from: accounts[1]})
             await instance.takeTurn(0, 0)
             await instance.takeTurn(0, 1, {from: accounts[1]})
+
+            // test victory detection
             const result = await instance.takeTurn(0, 0)
             assert.equal(result.logs.length, 2)
             assert.equal(result.logs[0].event, "NextMove")
             assert.equal(result.logs[1].event, "Victory")
             assert.equal(result.logs[1].args.gameId.valueOf(), 0, "Game ID should be 0")
             assert.equal(result.logs[1].args.winner.valueOf(), accounts[0], "Wrong victor")
+
+            // test getGamesByPlayer() after game completes
+            let games = await instance.getGamesByPlayer({from: accounts[0]})
+            assert.equal(games.length, 1, "Player 1 should have one game")
+            assert.equal(games[0], 1, "Player 1 plays in game 1")
+
+            games = await instance.getGamesByPlayer({from: accounts[1]})
+            assert.equal(games.length, 0, "Player 2 should have no games")
+
+            games = await instance.getGamesByPlayer({from: accounts[2]})
+            assert.equal(games.length, 1, "Player 3 should have one game")
+            assert.equal(games[0], 1, "Player 3 plays in game 1")
         })
         it("detect game complete, horizontal", async () => {
             await instance.newGame(accounts[0], accounts[1])
@@ -117,6 +150,7 @@ contract('Connect4', accounts => {
         })
         it("first player resigns", async () => {
             await instance.newGame(accounts[0], accounts[1])
+
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
 
@@ -136,6 +170,25 @@ contract('Connect4', accounts => {
             assert.equal(result.logs[0].event, "Resigned")
             assert.equal(result.logs[0].args.gameId.valueOf(), 0, "Game ID should be 0")
             assert.equal(result.logs[0].args.resigner.valueOf(), accounts[1], "Wrong resigner")
+        })
+        it("getGamesByPlayer after resignation", async () => {
+            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[0], accounts[2])
+
+            await instance.takeTurn(0, 1)
+            await instance.takeTurn(0, 0, {from: accounts[1]})
+            await instance.resignGame(0)
+
+            let games = await instance.getGamesByPlayer({from: accounts[0]})
+            assert.equal(games.length, 1, "Player 1 should have one game")
+            assert.equal(games[0], 1, "Player 1 plays in game 1")
+
+            games = await instance.getGamesByPlayer({from: accounts[1]})
+            assert.equal(games.length, 0, "Player 2 should have no games")
+
+            games = await instance.getGamesByPlayer({from: accounts[2]})
+            assert.equal(games.length, 1, "Player 3 should have one game")
+            assert.equal(games[0], 1, "Player 3 plays in game 1")
         })
     })
 })
