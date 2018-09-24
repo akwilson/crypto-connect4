@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0xac99e37429d5d5907a19d1206bd98f6815768aab"
+const connect4Address = "0x2e494d3f32931980e9528279e5015bcd76ac160e"
 
 class Connect4Web3 extends EventEmitter {
     _newGameOk(event, playerMove) {
@@ -107,6 +107,31 @@ class Connect4Web3 extends EventEmitter {
 			})
     }
 
+    _readActiveGames(gameId, gameInfo, board) {
+        const player1Moves = []
+        const player2Moves = []
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[i].length; j++) {
+                if (board[i][j] === "1") {
+                    player1Moves.push({ col: i, row: j })
+                } else if (board[i][j] === "2") {
+                    player2Moves.push({ col: i, row: j })
+                }
+            }
+        }
+
+        return {
+            gameData: {
+                gameId,
+                player1: gameInfo.player1,
+                player2: gameInfo.player2,
+                isPlayer1Next: gameInfo.isPlayer1Next,
+                player1Moves,
+                player2Moves
+            }
+        }
+    }
+
     init() {
 		if (typeof web3 !== "undefined") {
 			this.web3js = new Web3(window.web3.currentProvider)
@@ -128,6 +153,18 @@ class Connect4Web3 extends EventEmitter {
 				return accounts
         	})
 	}
+
+    getActiveGames() {
+        return this.connect4.methods.getGamesByPlayer().call({from: this.accountId})
+            .then(gameIds => {
+                return Promise.all(gameIds.map(gameId => {
+                    return Promise.all([
+                        this.connect4.methods.games(gameId).call({from: this.accountId}),
+                        this.connect4.methods.getBoard(gameId).call({from: this.accountId})
+                    ]).then(res => this._readActiveGames(gameId, res[0], res[1]))
+                }))
+            })
+    }
 
     newGame(player, opponent) {
         return new Promise((resolve, reject) => {

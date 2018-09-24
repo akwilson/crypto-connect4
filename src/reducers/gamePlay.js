@@ -53,6 +53,26 @@ function doNewGame(state, data) {
     }
 }
 
+function activateGames(state, games) {
+    const rv = {
+        ...state,
+        games: {}
+    }
+
+    games.forEach((game, idx) => {
+        rv.games[game.gameData.gameId] = {
+            ...newGameState,
+            gameId: game.gameData.gameId,
+            playerMoves: game.gameData.player1Moves,
+            opponentMoves: game.gameData.player2Moves,
+            playerMove: game.gameData.isPlayer1Next,
+            title: `Game ${idx + 1}`
+        }
+    })
+
+    return rv
+}
+
 export default (state = initialState, action) => {
     switch (action.type) {
         case "SWITCH_GAME":
@@ -157,6 +177,15 @@ export default (state = initialState, action) => {
             }
 
             return doNewGame(state, action.status)
+        }
+        case "ACTIVE_GAMES_LOADED": {
+            if (action.games.length) {
+                const rv = activateGames(state, action.games)
+                rv.selectedGame = "0"
+                return rv
+            }
+
+            return state
         }
         case "STATUS_APPEND": {
             const currGame = state.games[action.statusData.gameId]

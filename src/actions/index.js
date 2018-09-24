@@ -85,10 +85,18 @@ export const boardDeselect = () => ({
     type: "BOARD_DESELECT"
 })
 
+export const activeGames = games => ({
+    type: "ACTIVE_GAMES_LOADED",
+    games
+})
+
 export const initialiseWeb3 = () => {
     return dispatch => {
         return Connect4Web3.init()
-            .then(accounts => dispatch(web3Init(accounts)))
+            .then(accounts => {
+                dispatch(web3Init(accounts))
+                return Connect4Web3.getActiveGames().then(games => dispatch(activeGames(games)))
+            })
             .catch(err => dispatch(errorAction(err)))
     }
 }
