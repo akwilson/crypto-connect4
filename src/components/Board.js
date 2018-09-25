@@ -14,6 +14,7 @@ const mapStoreToProps = store => {
 
     return {
         ...game,
+
         boardHeight: store.gamePlay.boardDef.height,
         boardWidth: store.gamePlay.boardDef.width,
         tileMargin: store.gamePlay.boardDef.tileMargin,
@@ -31,9 +32,9 @@ class Board extends Component {
         if (col === this.props.sCol) {
             this.props.dispatch(selectedGridCol(null))
         } else {
-            const pc = this.props.playerMoves.filter(m => m.col === col)
-            const oc = this.props.opponentMoves.filter(m => m.col === col)
-            if (pc.length + oc.length < this.props.boardHeight) {
+            const p1 = this.props.player1Moves.filter(m => m.col === col)
+            const p2 = this.props.player2Moves.filter(m => m.col === col)
+            if (p1.length + p2.length < this.props.boardHeight) {
                 this.props.dispatch(selectedGridCol(col))
             }
         }
@@ -66,16 +67,16 @@ class Board extends Component {
         }
     }
 
-    makeTile(index, row, col, playerMovesSet, opponentMovesSet) {
+    makeTile(index, row, col, player1MovesSet, player2MovesSet) {
         const { tileSize, tileMargin, boardHeight, boardWidth, sCol, hCol } = this.props
 
         // Flip row value so that tiles stack up from the bottom of the board 
         const move = moveToString({row: (boardHeight - 1) - row, col})
         let cName = "r_off"
-        if (playerMovesSet.has(move)) {
-            cName = "r_usr"
-        } else if (opponentMovesSet.has(move)) {
-            cName = "r_opp"
+        if (player1MovesSet.has(move)) {
+            cName = "r_p1"
+        } else if (player2MovesSet.has(move)) {
+            cName = "r_p2"
         } else if (sCol === col) {
             cName = "r_select"
         } else if (hCol === col) {
@@ -93,14 +94,14 @@ class Board extends Component {
 
     buildGrid() {
         const { boardWidth, boardHeight } = this.props
-        const playerMovesSet = new Set(this.props.playerMoves.map(moveToString))
-        const opponentMovesSet = new Set(this.props.opponentMoves.map(moveToString))
+        const player1MovesSet = new Set(this.props.player1Moves.map(moveToString))
+        const player2MovesSet = new Set(this.props.player2Moves.map(moveToString))
         const tiles = []
 
         let index = 0
         for (let i = 0; i < boardHeight; i++) {
             for (let j = 0; j < boardWidth; j++) {
-                tiles.push(this.makeTile(index++, i, j, playerMovesSet, opponentMovesSet))
+                tiles.push(this.makeTile(index++, i, j, player1MovesSet, player2MovesSet))
             }
         }
 
@@ -108,7 +109,7 @@ class Board extends Component {
     }
 
     makeGameOverDisplay() {
-        const { player, winner, resigner, isDraw } = this.props
+        const { player, winner, resigner } = this.props
 
         if (winner) {
             return <div>Game over -- you {winner === player ? "win!" : "lose!"}</div>
@@ -120,12 +121,12 @@ class Board extends Component {
     }
 
     isGameOver() {
-        const { player, winner, resigner, isDraw } = this.props
+        const { winner, resigner, isDraw } = this.props
         return winner || resigner || isDraw
     }
 
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, playerMove, player, sCol, tileMargin } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, player, player1, player2, isPlayer1Next, sCol, tileMargin } = this.props
         if (!gameId) {
             return null
         }
@@ -133,7 +134,7 @@ class Board extends Component {
         let control
         if (this.isGameOver()) {
             control = this.makeGameOverDisplay()
-        } else if (playerMove) {
+        } else if ((isPlayer1Next && (player === player1)) || (!isPlayer1Next && (player === player2))) {
             control = (
                 <div>
                     <div>Your move, select a column.</div>
@@ -146,6 +147,7 @@ class Board extends Component {
 
         return (
             <div>
+                <div>Opponent is {player === player1 ? player2 : player1}</div>
                 <div><button id="btnResign" onClick={e => this.resignGame()} disabled={this.isGameOver()}>Resign</button></div>
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
                     width={(boardWidth * tileSize * 2) + boardWidth * tileMargin}

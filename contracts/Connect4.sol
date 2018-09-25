@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 contract Connect4 {
-    event NextMove(uint indexed gameId, address player, uint8 x, uint8 y);
+    event NextMove(uint indexed gameId, address player, bool isPlayer1Next, uint8 x, uint8 y);
     event Victory(uint indexed gameId, address winner);
     event Resigned(uint indexed gameId, address resigner);
     event Draw(uint indexed gameId);
@@ -93,7 +93,7 @@ contract Connect4 {
         game.usedTiles[_x][y] = game.isPlayer1Next ? 1 : 2;
         game.isPlayer1Next = !game.isPlayer1Next;
 
-        emit NextMove(_gameId, msg.sender, _x, y);
+        emit NextMove(_gameId, msg.sender, game.isPlayer1Next, _x, y);
         if (_isGameOver(game, _x, y)) {
             game.isOver = true;
             activeGames[game.player1]--;

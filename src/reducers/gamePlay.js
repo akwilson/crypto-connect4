@@ -11,10 +11,12 @@ const initialState = {
 }
 
 const newGameState = {
+    player1: null,
+    player2: null,
     gameId: null,
-    playerMoves: [],
-    opponentMoves: [],
-    playerMove: true,
+    player1Moves: [],
+    player2Moves: [],
+    isPlayer1Next: true,
     winner: null,
     resigner: null,
     isDraw: false,
@@ -26,8 +28,10 @@ function makeGame(state, gameData) {
     const num = state.games ? Object.keys(state.games).length + 1 : 1
     return {
         ...newGameState,
+        player1: gameData.player1,
+        player2: gameData.player2,
         gameId: gameData.gameId,
-        playerMove: gameData.playerMove,
+        isPlayer1Next: true,
         title: `Game ${num}`
     }
 }
@@ -63,9 +67,11 @@ function activateGames(state, games) {
         rv.games[game.gameData.gameId] = {
             ...newGameState,
             gameId: game.gameData.gameId,
-            playerMoves: game.gameData.player1Moves,
-            opponentMoves: game.gameData.player2Moves,
-            playerMove: game.gameData.isPlayer1Next,
+            player1: game.gameData.player1,
+            player2: game.gameData.player2,
+            player1Moves: game.gameData.player1Moves,
+            player2Moves: game.gameData.player2Moves,
+            isPlayer1Next: game.gameData.isPlayer1Next,
             title: `Game ${idx + 1}`
         }
     })
@@ -112,9 +118,9 @@ export default (state = initialState, action) => {
             const currGame = state.games[action.moveData.gameId]
             const game = {
                 ...currGame,
-                playerMove: action.moveData.playerMove,
-                playerMoves: action.moveData.playerMove ? currGame.playerMoves : currGame.playerMoves.concat(mv),
-                opponentMoves: action.moveData.playerMove ? currGame.opponentMoves.concat(mv) : currGame.opponentMoves
+                isPlayer1Next: action.moveData.isPlayer1Next,
+                player1Moves: action.moveData.player === currGame.player1 ? currGame.player1Moves.concat(mv) : currGame.player1Moves,
+                player2Moves: action.moveData.player === currGame.player2 ? currGame.player2Moves.concat(mv) : currGame.player2Moves
             }
 
             return {
@@ -181,7 +187,7 @@ export default (state = initialState, action) => {
         case "ACTIVE_GAMES_LOADED": {
             if (action.games.length) {
                 const rv = activateGames(state, action.games)
-                rv.selectedGame = "0"
+                rv.selectedGame = Object.keys(rv.games)[0]
                 return rv
             }
 

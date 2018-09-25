@@ -15,14 +15,6 @@ export default (state = initialState, action) => {
                     opponent: action.opponent
                 }
             }
-        case "CHALLENGE_ACCEPTED":
-            return {
-                ...state,
-                accounts: {
-                    ...state.accounts,
-                    opponent: action.gameData.opponent
-                }
-            }
         case "WEB3_INIT":
             return {
                 ...state,

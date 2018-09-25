@@ -30,6 +30,7 @@ contract('Connect4', accounts => {
             assert.equal(result.logs[0].args.gameId.valueOf(), 0, "Game ID should be 0")
             assert.equal(result.logs[0].args.x.valueOf(), 3, "X should be 3")
             assert.equal(result.logs[0].args.y.valueOf(), 0, "Y should be 0")
+            assert.equal(result.logs[0].args.isPlayer1Next.valueOf(), false, "Player2 should be next")
 
             const newGame = await instance.games(0)
             assert.equal(newGame[2], false, "New game should not be over")
