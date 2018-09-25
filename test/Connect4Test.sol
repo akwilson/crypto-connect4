@@ -13,7 +13,8 @@ contract Connect4Test {
         address p2;
         bool isOver;
         bool np;
-        (p1, p2, isOver, np) = c4.games(0);
+        uint32 t;
+        (p1, p2, isOver, np, t) = c4.games(0);
 
         Assert.equal(p1, tx.origin, "New game created: player 1 address");
         Assert.equal(p2, 0x123, "New game created: player 2 address");

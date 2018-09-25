@@ -42,7 +42,7 @@ contract('Connect4', accounts => {
             try {
                 await instance.takeTurn(0, 9)
                 assert.fail("Error not thrown")
-            } catch(e) {
+            } catch (e) {
                 assert.equal(e.message, "VM Exception while processing transaction: revert Illegal move")
             }
         })
@@ -58,7 +58,7 @@ contract('Connect4', accounts => {
             try {
                 await instance.takeTurn(0, 0)
                 assert.fail("Error not thrown")
-            } catch(e) {
+            } catch (e) {
                 assert.equal(e.message, "VM Exception while processing transaction: revert Column full")
             }
         })
@@ -129,6 +129,13 @@ contract('Connect4', accounts => {
             assert.equal(result.logs[1].event, "Victory")
             assert.equal(result.logs[1].args.gameId.valueOf(), 0, "Game ID should be 0")
             assert.equal(result.logs[1].args.winner.valueOf(), accounts[0], "Wrong victor")
+
+            // might as well test this here. Can't move after game over
+            try {
+                await instance.takeTurn(0, 1, {from: accounts[1]})
+            } catch (e) {
+                assert.equal(e.message, "VM Exception while processing transaction: revert Game Over")
+            }
         })
         it("detect game complete, diagonal", async () => {
             await instance.newGame(accounts[0], accounts[1])
@@ -149,6 +156,9 @@ contract('Connect4', accounts => {
             assert.equal(result.logs[1].args.gameId.valueOf(), 0, "Game ID should be 0")
             assert.equal(result.logs[1].args.winner.valueOf(), accounts[1], "Wrong victor")
         })
+    })
+
+    contract("Handle resignations", () => {
         it("first player resigns", async () => {
             await instance.newGame(accounts[0], accounts[1])
 
@@ -190,6 +200,76 @@ contract('Connect4', accounts => {
             games = await instance.getGamesByPlayer({from: accounts[2]})
             assert.equal(games.length, 1, "Player 3 should have one game")
             assert.equal(games[0], 1, "Player 3 plays in game 1")
+        })
+        it("third player resigns should reject", async () => {
+            await instance.newGame(accounts[0], accounts[1])
+
+            await instance.takeTurn(0, 1)
+            await instance.takeTurn(0, 0, {from: accounts[1]})
+
+            try {
+                await instance.resignGame(0, {from: accounts[3]})
+                assert.fail("Error not thrown")
+            } catch (e) {
+                assert.equal(e.message, "VM Exception while processing transaction: revert Who are you?")
+            }
+        })
+        it("Can't resign if game over", async () => {
+            await instance.newGame(accounts[0], accounts[1])
+
+            await instance.takeTurn(0, 1)
+            await instance.takeTurn(0, 0, {from: accounts[1]})
+            await instance.resignGame(0, {from: accounts[0]})
+
+            try {
+                await instance.resignGame(0)
+                assert.fail("Error not thrown")
+            } catch (e) {
+                assert.equal(e.message, "VM Exception while processing transaction: revert Game Over")
+            }
+        })
+    })
+
+    contract("Claim win", () => {
+        it("Reject when wrong player", async () => {
+            await instance.newGame(accounts[0], accounts[1])
+
+            await instance.takeTurn(0, 1)
+            await instance.takeTurn(0, 0, {from: accounts[1]})
+
+            try {
+                await instance.claimWin(0, {from: accounts[0]})
+                assert.fail("Error not thrown")
+            } catch (e) {
+                assert.equal(e.message, "VM Exception while processing transaction: revert Cannot claim win on your move")
+            }
+        })
+        it("Reject when claim within window", async () => {
+            await instance.newGame(accounts[0], accounts[1])
+
+            await instance.takeTurn(0, 1)
+            await instance.takeTurn(0, 0, {from: accounts[1]})
+
+            try {
+                await instance.claimWin(0, {from: accounts[1]})
+                assert.fail("Error not thrown")
+            } catch (e) {
+                assert.equal(e.message, "VM Exception while processing transaction: revert Cannot claim a win yet") 
+            }
+        })
+        it("Can't claim win if game over", async () => {
+            await instance.newGame(accounts[0], accounts[1])
+
+            await instance.takeTurn(0, 1)
+            await instance.takeTurn(0, 0, {from: accounts[1]})
+            await instance.resignGame(0, {from: accounts[0]}) // game over
+
+            try {
+                await instance.claimWin(0, {from: accounts[1]})
+                assert.fail("Error not thrown")
+            } catch (e) {
+                assert.equal(e.message, "VM Exception while processing transaction: revert Game Over") 
+            }
         })
     })
 })

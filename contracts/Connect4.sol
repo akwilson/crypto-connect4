@@ -10,6 +10,7 @@ contract Connect4 {
     uint boardWidth = 7;
     uint boardHeight = 6;
     uint winCount = 4;
+    uint claimWindow = 3 hours;
 
     struct Game {
         address player1;
@@ -17,10 +18,23 @@ contract Connect4 {
         bool isOver;
         bool isPlayer1Next;
         uint8[6][7] usedTiles;
+        uint32 claimTime;
     }
 
     Game[] public games;
     mapping(address => uint) activeGames;
+
+    modifier isGameActive(uint256 _gameId) {
+        Game memory game = games[_gameId];
+        require(!game.isOver, "Game Over");
+        _;
+    }
+
+    function _markGameOver(Game storage _game) private {
+        _game.isOver = true;
+        activeGames[_game.player1]--;
+        activeGames[_game.player2]--;
+    }
 
     function _isLegalMove(Game _game, uint8 _x) private view returns(bool) {
         return !_game.isOver && _x < boardWidth;
@@ -66,6 +80,7 @@ contract Connect4 {
         game.player2 = _player2;
         game.isOver = false;
         game.isPlayer1Next = true;
+        game.claimTime = uint32(now + claimWindow);
 
         uint id = games.push(game) - 1;
         activeGames[_player1]++;
@@ -74,7 +89,7 @@ contract Connect4 {
         emit NewGame(game.player1, game.player2, id);
     }
 
-    function takeTurn(uint _gameId, uint8 _x) public {
+    function takeTurn(uint _gameId, uint8 _x) public isGameActive(_gameId) {
         Game storage game = games[_gameId];
         address nextMover = game.isPlayer1Next ? game.player1 : game.player2;
         require(msg.sender == nextMover, "Not your move");
@@ -92,13 +107,11 @@ contract Connect4 {
 
         game.usedTiles[_x][y] = game.isPlayer1Next ? 1 : 2;
         game.isPlayer1Next = !game.isPlayer1Next;
+        game.claimTime = uint32(now + claimWindow);
 
         emit NextMove(_gameId, msg.sender, game.isPlayer1Next, _x, y);
         if (_isGameOver(game, _x, y)) {
-            game.isOver = true;
-            activeGames[game.player1]--;
-            activeGames[game.player2]--;
-
+            _markGameOver(game);
             emit Victory(_gameId, msg.sender);
         }
 
@@ -106,12 +119,22 @@ contract Connect4 {
         // make payable
     }
 
-    function resignGame(uint _gameId) public {
+    function resignGame(uint _gameId) public isGameActive(_gameId) {
         Game storage game = games[_gameId];
-        game.isOver = true;
-        activeGames[game.player1]--;
-        activeGames[game.player2]--;
+        require(msg.sender == game.player1 || msg.sender == game.player2, "Who are you?");
+
+        _markGameOver(game);
         emit Resigned(_gameId, msg.sender);
+    }
+
+    function claimWin(uint _gameId) public isGameActive(_gameId) {
+        Game storage game = games[_gameId];
+        address nextMover = game.isPlayer1Next ? game.player1 : game.player2;
+        require(msg.sender != nextMover, "Cannot claim win on your move");
+        require(game.claimTime <= now, "Cannot claim a win yet");
+
+        _markGameOver(game);
+        emit Victory(_gameId, msg.sender);
     }
 
     function getBoard(uint _gameId) public view returns(uint8[6][7]) {
