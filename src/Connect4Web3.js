@@ -2,7 +2,11 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x78aeb76ce5fd1fe33658ae24b0104154c389a202"
+const connect4Address = "0x15e29055faa7c7487e116eb8a78f6e191e306fa7"
+
+function now() {
+    return Math.round((new Date()).getTime() / 1000)
+}
 
 class Connect4Web3 extends EventEmitter {
     _newGameOk(event) {
@@ -34,7 +38,7 @@ class Connect4Web3 extends EventEmitter {
             })
             .on("error", err => {
                 console.error("EVENT NextMove ERROR: " + err)
-                this.emit("GAME_ERROR", err)
+                this.emit("GAME_ERROR", { gameId, err })
             })
 
         this.connect4Events.events.Victory({filter: { gameId }})
@@ -50,7 +54,7 @@ class Connect4Web3 extends EventEmitter {
             })
             .on("error", err => {
                 console.error("EVENT Victory ERROR: " + err)
-                this.emit("GAME_ERROR", err)
+                this.emit("GAME_ERROR", { gameId, err })
             })
 
         this.connect4Events.events.Resigned({filter: { gameId }})
@@ -66,7 +70,7 @@ class Connect4Web3 extends EventEmitter {
             })
             .on("error", err => {
                 console.error("EVENT Resigned ERROR: " + err)
-                this.emit("GAME_ERROR", err)
+                this.emit("GAME_ERROR", { gameId, err })
             })
 
         this.connect4Events.events.Draw({filter: { gameId }})
@@ -77,7 +81,7 @@ class Connect4Web3 extends EventEmitter {
             })
             .on("error", err => {
                 console.error("EVENT Draw ERROR: " + err)
-                this.emit("GAME_ERROR", err)
+                this.emit("GAME_ERROR", { gameId, err })
             })
     }
 
@@ -92,7 +96,7 @@ class Connect4Web3 extends EventEmitter {
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)
-				this.emit("GAME_ERROR", err)
+				this.emit("GAME_ERROR", { gameId: 999, err })
 			})
 
     	this.connect4Events.events.NewGame({filter: {player2: this.accountId}})
@@ -102,7 +106,7 @@ class Connect4Web3 extends EventEmitter {
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)
-				this.emit("GAME_ERROR", err)
+				this.emit("GAME_ERROR", { gameId: 999, err })
 			})
     }
 
@@ -126,7 +130,8 @@ class Connect4Web3 extends EventEmitter {
                 player2: gameInfo.player2,
                 isPlayer1Next: gameInfo.isPlayer1Next,
                 player1Moves,
-                player2Moves
+                player2Moves,
+                isClaimable: gameInfo.claimTime <= now()
             }
         }
     }
@@ -195,7 +200,7 @@ class Connect4Web3 extends EventEmitter {
                     resolve(receipt)
                 })
                 .on("error", err => {
-                    console.log("TakeTurn txn OK")
+                    console.log("TakeTurn txn ERR")
                     console.error(err)
                     reject(err)
                 })
@@ -212,7 +217,24 @@ class Connect4Web3 extends EventEmitter {
                     resolve(receipt)
                 })
                 .on("error", err => {
-                    console.log("Resigned txn OK")
+                    console.log("Resigned txn ERR")
+                    console.error(err)
+                    reject(err)
+                })
+        })
+    }
+
+    claimWin(player, gameId) {
+        return new Promise((resolve, reject) => {
+            this.connect4.methods.claimWin(gameId)
+                .send({from: player})
+                .on("receipt", receipt => {
+                    console.log("ClaimWin txn OK")
+                    console.log(receipt)
+                    resolve(receipt)
+                })
+                .on("error", err => {
+                    console.log("ClaimWin txn ERR")
                     console.error(err)
                     reject(err)
                 })

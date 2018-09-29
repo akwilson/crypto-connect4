@@ -7,15 +7,15 @@ export default store => {
     })
 
     c4Web3.on("CHALLENGE_ACCEPTED", newGameData => {
-        store.dispatch(actions.challengeAccepted(newGameData))
+        store.dispatch(actions.challengeAcceptedTimeout(newGameData))
     })
 
-    c4Web3.on("GAME_ERROR", error => {
-        store.dispatch(actions.errorAction(error))
+    c4Web3.on("GAME_ERROR", errData => {
+        store.dispatch(actions.errorAction(errData))
     })
 
     c4Web3.on("NEXT_MOVE_OK", moveData => {
-        store.dispatch(actions.nextMoveReceived(moveData))
+        store.dispatch(actions.nextMoveReceivedTimeout(moveData))
     })
 
     c4Web3.on("GAME_OVER_OK", gameData => {

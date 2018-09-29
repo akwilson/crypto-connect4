@@ -1,5 +1,8 @@
 import Connect4Web3 from "../Connect4Web3"
 
+const gameIdIntervalMap = {}
+const claimTimeoutWindow = 1800000
+
 export const switchGame = gameId => ({
     type: "SWITCH_GAME",
     selected: gameId
@@ -66,9 +69,9 @@ export const web3Init = accounts => ({
     accounts
 })
 
-export const errorAction = error => ({
+export const errorAction = errData => ({
     type: "ERROR_MSG",
-    errMsg: error.message
+    errData
 })
 
 export const selectedGridCol = column => ({
@@ -90,6 +93,29 @@ export const activeGames = games => ({
     games
 })
 
+export const claimWinTimeout = gameId => ({
+    type: "CLAIM_WIN_TIMEOUT",
+    gameData: {
+        gameId
+    }
+})
+
+export const nextMoveReceivedTimeout = moveData => {
+    return dispatch => {
+        clearInterval(gameIdIntervalMap[moveData.gameId])
+        gameIdIntervalMap[moveData.gameId] = setTimeout(() => dispatch(claimWinTimeout(moveData.gameId)), claimTimeoutWindow)
+        dispatch(nextMoveReceived(moveData))
+    }
+}
+
+export const challengeAcceptedTimeout = gameData => {
+    return dispatch => {
+        clearInterval(gameIdIntervalMap[gameData.gameId])
+        gameIdIntervalMap[gameData.gameId] = setTimeout(() => dispatch(claimWinTimeout(gameData.gameId)), claimTimeoutWindow)
+        dispatch(challengeAccepted(gameData))
+    }
+}
+
 export const initialiseWeb3 = () => {
     return dispatch => {
         return Connect4Web3.init()
@@ -97,7 +123,7 @@ export const initialiseWeb3 = () => {
                 dispatch(web3Init(accounts))
                 return Connect4Web3.getActiveGames().then(games => dispatch(activeGames(games)))
             })
-            .catch(err => dispatch(errorAction(err)))
+            .catch(err => dispatch(errorAction({ gameId: 999, err })))
     }
 }
 
@@ -105,7 +131,7 @@ export const newGame = players => {
     return dispatch => {
         return Connect4Web3.newGame(players.player, players.opponent)
             .then(receipt => dispatch(newGameReceipt("New Game", new Date(), receipt.transactionHash)))
-            .catch(err => dispatch(errorAction(err)))
+            .catch(err => dispatch(errorAction({ gameId: 999, err })))
     }
 }
 
@@ -113,7 +139,7 @@ export const nextMove = moveData => {
     return dispatch => {
         return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
             .then(receipt => dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), receipt.transactionHash)))
-            .catch(err => dispatch(errorAction(err)))
+            .catch(err => dispatch(errorAction({ gameId: moveData.gameId, err })))
     }
 }
 
@@ -121,6 +147,14 @@ export const resignGame = resignData => {
     return dispatch => {
         return Connect4Web3.resignGame(resignData.player, resignData.gameId)
             .then(receipt => dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), receipt.transactionHash)))
-            .catch(err => dispatch(errorAction(err)))
+            .catch(err => dispatch(errorAction({ gameId: resignData.gameId, err })))
+    }
+}
+
+export const claimWin = gameData => {
+    return dispatch => {
+        return Connect4Web3.claimWin(gameData.player, gameData.gameId)
+            .then(receipt => dispatch(statusAppend(gameData.gameId, "Win claimed", new Date(), receipt.transactionHash)))
+            .catch(err => dispatch(errorAction({ gameId: gameData.gameId, err })))
     }
 }

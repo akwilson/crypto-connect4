@@ -21,7 +21,18 @@ const newGameState = {
     resigner: null,
     isDraw: false,
     statusMessages: [],
-    errorMessage: null
+    errorMessage: null,
+    isClaimable: false
+}
+
+function parseGarbage(garbage) {
+    const start = garbage.indexOf("revert")
+    if (start >= 0) {
+        return garbage.substring(start + 7)
+    }
+
+    // good luck
+    return garbage
 }
 
 function makeGame(state, gameData) {
@@ -72,7 +83,8 @@ function activateGames(state, games) {
             player1Moves: game.gameData.player1Moves,
             player2Moves: game.gameData.player2Moves,
             isPlayer1Next: game.gameData.isPlayer1Next,
-            title: `Game ${idx + 1}`
+            title: `Game ${idx + 1}`,
+            isClaimable: game.gameData.isClaimable
         }
     })
 
@@ -120,7 +132,8 @@ export default (state = initialState, action) => {
                 ...currGame,
                 isPlayer1Next: action.moveData.isPlayer1Next,
                 player1Moves: action.moveData.player === currGame.player1 ? currGame.player1Moves.concat(mv) : currGame.player1Moves,
-                player2Moves: action.moveData.player === currGame.player2 ? currGame.player2Moves.concat(mv) : currGame.player2Moves
+                player2Moves: action.moveData.player === currGame.player2 ? currGame.player2Moves.concat(mv) : currGame.player2Moves,
+                isClaimable: false
             }
 
             return {
@@ -193,6 +206,20 @@ export default (state = initialState, action) => {
 
             return state
         }
+        case "CLAIM_WIN_TIMEOUT": {
+            const game = {
+                ...state.games[action.gameData.gameId],
+                isClaimable: true
+            }
+
+            return {
+                ...state,
+                games: {
+                    ...state.games,
+                    [action.gameData.gameId]: game
+                }
+            }
+        }
         case "STATUS_APPEND": {
             const currGame = state.games[action.statusData.gameId]
             const game = {
@@ -209,9 +236,17 @@ export default (state = initialState, action) => {
             }
         }
         case "ERROR_MSG":
+            const game = {
+                ...state.games[action.errData.gameId],
+                errorMessage: parseGarbage(action.errData.err.message)
+            }
+
             return {
                 ...state,
-                errorMessage: action.errMsg
+                games: {
+                    ...state.games,
+                    [action.errData.gameId]: game
+                }
             }
         default:
             return state

@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
-import { selectedGridCol, highlightedGridCol, nextMove, boardDeselect, resignGame } from "../actions"
+import { selectedGridCol, highlightedGridCol, nextMove, boardDeselect, resignGame, claimWin } from "../actions"
 
 import "./Board.css"
 
@@ -67,6 +67,15 @@ class Board extends Component {
         }
     }
 
+    claimWin() {
+        if (window.confirm("Claim win, are you sure?")) {
+            this.props.dispatch(claimWin({
+                player: this.props.player,
+                gameId: this.props.gameId
+            }))
+        }
+    }
+
     makeTile(index, row, col, player1MovesSet, player2MovesSet) {
         const { tileSize, tileMargin, boardHeight, boardWidth, sCol, hCol } = this.props
 
@@ -125,6 +134,11 @@ class Board extends Component {
         return winner || resigner || isDraw
     }
 
+    isClaimable() {
+        const { isClaimable, isPlayer1Next, player, player1, player2 } = this.props
+        return !this.isGameOver() && isClaimable && ((!isPlayer1Next && (player === player1)) || (isPlayer1Next && (player === player2)))
+    }
+
     render() {
         const { boardHeight, boardWidth, tileSize, gameId, player, player1, player2, isPlayer1Next, sCol, tileMargin } = this.props
         if (!gameId) {
@@ -148,7 +162,10 @@ class Board extends Component {
         return (
             <div>
                 <div>Opponent is {player === player1 ? player2 : player1}</div>
-                <div><button id="btnResign" onClick={e => this.resignGame()} disabled={this.isGameOver()}>Resign</button></div>
+                <div>
+                    <button className="btnEnders" onClick={e => this.claimWin()} disabled={!this.isClaimable()}>Claim Win</button>
+                    <button className="btnEnders" onClick={e => this.resignGame()} disabled={this.isGameOver()}>Resign</button>
+                </div>
                 <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
                     width={(boardWidth * tileSize * 2) + boardWidth * tileMargin}
                     height={(boardHeight * tileSize * 2) + boardHeight * tileMargin}

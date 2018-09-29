@@ -10,7 +10,7 @@ contract Connect4 {
     uint boardWidth = 7;
     uint boardHeight = 6;
     uint winCount = 4;
-    uint claimWindow = 3 hours;
+    uint claimWindow = 30 minutes;
 
     struct Game {
         address player1;
