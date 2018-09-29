@@ -2,14 +2,14 @@ import React, { Component } from "react"
 import Board from "./Board"
 import Status from "./Status"
 
-import "./GameContainer.css"
+//import "./GameContainer.css"
 
 class GameContainer extends Component {
     render() {
         return (
-            <div id="gameContainer">
-                <Board/>
-                <Status/>
+            <div className="row no-gutters">
+                <Board className="col-sm"/>
+                <Status className="col-sm"/>
             </div>
         )
     }

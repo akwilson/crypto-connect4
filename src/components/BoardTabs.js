@@ -41,11 +41,13 @@ class BoardTabs extends Component {
             )
         }
 
-		return (
-        	<ul className="nav nav-tabs">
-                {gameTabs}
-        	</ul>
-		)
+        return (
+            <div className="mb-1">
+                <ul className="nav nav-tabs">
+                    {gameTabs}
+                </ul>
+            </div>
+        )
     }
 }
 
