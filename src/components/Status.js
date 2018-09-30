@@ -50,7 +50,7 @@ class Status extends Component {
         }
 
         return (
-            <div className="ml-3 w-50">
+            <div className="ml-3 w-60">
                 <div>
                     {this.buildStatusTable(statusMessages)}
                 </div>
