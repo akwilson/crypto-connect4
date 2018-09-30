@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
+import BoardControl from "./BoardControl"
 import { selectedGridCol, highlightedGridCol, nextMove, boardDeselect, resignGame, claimWin } from "../actions"
 
 import "./Board.css"
@@ -48,7 +49,7 @@ class Board extends Component {
         this.props.dispatch(boardDeselect())
     }
 
-    takeTurn() {
+    takeTurn = () => {
         const moveData = {
             gameId: this.props.gameId,
             column: this.props.sCol,
@@ -117,18 +118,6 @@ class Board extends Component {
         return (tiles)
     }
 
-    makeGameOverDisplay() {
-        const { player, winner, resigner } = this.props
-
-        if (winner) {
-            return <div>Game over -- you {winner === player ? "win!" : "lose!"}</div>
-        } else if (resigner) {
-            return <div>Game over -- you {resigner !== player ? "win!" : "lose!"} {resigner !== player ? "Opponent" : "You"} resigned.</div>
-        } 
-
-        return <div>Game drawn!</div>
-    }
-
     isGameOver() {
         const { winner, resigner, isDraw } = this.props
         return winner || resigner || isDraw
@@ -140,39 +129,38 @@ class Board extends Component {
     }
 
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, player, player1, player2, isPlayer1Next, sCol, tileMargin } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, player, player1, player2, isPlayer1Next, sCol, tileMargin, winner, resigner } = this.props
         if (!gameId) {
             return null
         }
 
-        let control
-        if (this.isGameOver()) {
-            control = this.makeGameOverDisplay()
-        } else if ((isPlayer1Next && (player === player1)) || (!isPlayer1Next && (player === player2))) {
-            control = (
-                <div>
-                    <div>Your move, select a column.</div>
-                    <button id="btnMove" onClick={e => this.takeTurn()} disabled={sCol === null}>Move</button>
-                </div>
-            )
-        } else {
-            control = <div>Waiting for opponent...</div>
-        }
-
         return (
             <div>
-                <div>Opponent is {player === player1 ? player2 : player1}</div>
-                <div>
-                    <button className="btnEnders" onClick={e => this.claimWin()} disabled={!this.isClaimable()}>Claim Win</button>
-                    <button className="btnEnders" onClick={e => this.resignGame()} disabled={this.isGameOver()}>Resign</button>
+                <div className="mb-1">
+                    <svg alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                        <circle className={player === player1 ? "r_p2" : "r_p1"} cx="10" cy="10" r="10"/>
+                    </svg>
+                    <span className="ml-2 align-middle">Opponent is {player === player1 ? player2 : player1}</span>
                 </div>
-                <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
-                    width={(boardWidth * tileSize * 2) + boardWidth * tileMargin}
-                    height={(boardHeight * tileSize * 2) + boardHeight * tileMargin}
-                    onMouseLeave={e => this.boardMouseLeave()}>
-                    {this.buildGrid()}
-                </svg>
-                {control}
+                <div className="row no-gutters mb-3">
+                    <button className="col-2 btn btn-primary btn-sm" onClick={e => this.claimWin()} disabled={!this.isClaimable()}>Claim Win</button>
+                    <button className="col-2 btn btn-primary btn-sm ml-1" onClick={e => this.resignGame()} disabled={this.isGameOver()}>Resign</button>
+                </div>
+                <div className="row no-gutters mb-2">
+                    <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
+                        width={(boardWidth * tileSize * 2) + boardWidth * tileMargin}
+                        height={(boardHeight * tileSize * 2) + boardHeight * tileMargin}
+                        onMouseLeave={e => this.boardMouseLeave()}>
+                        {this.buildGrid()}
+                    </svg>
+                </div>
+                <div className="row no-gutters">
+                    <BoardControl isGameOver={this.isGameOver()}
+                                  isPlayerNext={((isPlayer1Next && (player === player1)) || (!isPlayer1Next && (player === player2)))}
+                                  isColSelected={sCol !== null} player={player} winner={winner} resigner={resigner}
+                                  isPlayer1={player === player1}
+                                  takeTurn={this.takeTurn}/>
+                </div>
             </div>
         )
     }
