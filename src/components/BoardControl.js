@@ -56,12 +56,20 @@ class BoardControl extends Component {
         const { player, winner, resigner } = this.props
 
         if (winner) {
-            return <div>Game over -- you {winner === player ? "win!" : "lose!"}</div>
+            return (
+                <div className={"w-100 alert alert-" + (winner === player ? "success" : "warning")}>
+                    Game over -- you {winner === player ? "win!" : "lose!"}
+                </div>
+            )
         } else if (resigner) {
-            return <div>Game over -- you {resigner !== player ? "win!" : "lose!"} {resigner !== player ? "Opponent" : "You"} resigned.</div>
+            return (
+                <div className={"w-100 alert alert-" + (resigner !== player ? "success" : "warning")}>
+                    Game over -- you {resigner !== player ? "win!" : "lose!"} {resigner !== player ? "Opponent" : "You"} resigned.
+                </div>
+            )
         } 
 
-        return <div>Game drawn!</div>
+        return <div className="w-100 alert alert-info">Game drawn!</div>
     }
 
     render() {
