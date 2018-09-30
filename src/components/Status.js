@@ -19,13 +19,20 @@ class Status extends Component {
         }
 
         let index = 0
-        const sms = statusMessages.map(msg => <tr key={index++}><td className="tdbuff">{msg.sType}</td>
-            <td className="tdbuff">{dateFormat(msg.date, "HH:MM:ss")}</td><td>{msg.message}</td></tr>)
+        const sms = statusMessages.map(msg => <tr key={index++}><td>{msg.sType}</td>
+            <td>{dateFormat(msg.date, "HH:MM:ss")}</td><td>{msg.message}</td></tr>)
 
         return (
-            <table>
+            <table className="table table-sm table-borderless">
                 <thead>
-                    <tr><th colSpan="3">Transaction Receipts</th></tr>
+                    <tr>
+                        <th colSpan="3">Transaction Receipts</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Move</th>
+                        <th scope="col">Timestamp</th>
+                        <th scope="col">Receipt</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {sms}
@@ -37,10 +44,17 @@ class Status extends Component {
     render() {
         const { statusMessages, errorMessage } = this.props
 
+        let err
+        if (errorMessage) {
+            err = <div className="alert alert-danger">{errorMessage}</div>
+        }
+
         return (
-            <div className="gcbuff">
-                {this.buildStatusTable(statusMessages)}
-                <div id="errorMsg">{errorMessage}</div>
+            <div className="ml-3 w-50">
+                <div>
+                    {this.buildStatusTable(statusMessages)}
+                </div>
+                {err}
             </div>
         )
     }

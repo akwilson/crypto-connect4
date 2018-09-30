@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 import BoardControl from "./BoardControl"
-import { selectedGridCol, highlightedGridCol, nextMove, boardDeselect, resignGame, claimWin } from "../actions"
+import { selectedGridCol, highlightedGridCol, boardDeselect } from "../actions"
 
 import "./Board.css"
 
@@ -49,34 +49,6 @@ class Board extends Component {
         this.props.dispatch(boardDeselect())
     }
 
-    takeTurn = () => {
-        const moveData = {
-            gameId: this.props.gameId,
-            column: this.props.sCol,
-            player: this.props.player
-        }
-
-        this.props.dispatch(nextMove(moveData))
-    }
-
-    resignGame() {
-        if (window.confirm("Resign game, are you sure?")) {
-            this.props.dispatch(resignGame({
-                player: this.props.player,
-                gameId: this.props.gameId
-            }))
-        }
-    }
-
-    claimWin() {
-        if (window.confirm("Claim win, are you sure?")) {
-            this.props.dispatch(claimWin({
-                player: this.props.player,
-                gameId: this.props.gameId
-            }))
-        }
-    }
-
     makeTile(index, row, col, player1MovesSet, player2MovesSet) {
         const { tileSize, tileMargin, boardHeight, boardWidth, sCol, hCol } = this.props
 
@@ -118,35 +90,15 @@ class Board extends Component {
         return (tiles)
     }
 
-    isGameOver() {
-        const { winner, resigner, isDraw } = this.props
-        return winner || resigner || isDraw
-    }
-
-    isClaimable() {
-        const { isClaimable, isPlayer1Next, player, player1, player2 } = this.props
-        return !this.isGameOver() && isClaimable && ((!isPlayer1Next && (player === player1)) || (isPlayer1Next && (player === player2)))
-    }
-
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, player, player1, player2, isPlayer1Next, sCol, tileMargin, winner, resigner } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, tileMargin } = this.props
         if (!gameId) {
             return null
         }
 
         return (
             <div>
-                <div className="mb-1">
-                    <svg alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-                        <circle className={player === player1 ? "r_p2" : "r_p1"} cx="10" cy="10" r="10"/>
-                    </svg>
-                    <span className="ml-2 align-middle">Opponent is {player === player1 ? player2 : player1}</span>
-                </div>
                 <div className="row no-gutters mb-3">
-                    <button className="col-2 btn btn-primary btn-sm" onClick={e => this.claimWin()} disabled={!this.isClaimable()}>Claim Win</button>
-                    <button className="col-2 btn btn-primary btn-sm ml-1" onClick={e => this.resignGame()} disabled={this.isGameOver()}>Resign</button>
-                </div>
-                <div className="row no-gutters mb-2">
                     <svg id="grid" alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg"
                         width={(boardWidth * tileSize * 2) + boardWidth * tileMargin}
                         height={(boardHeight * tileSize * 2) + boardHeight * tileMargin}
@@ -155,11 +107,7 @@ class Board extends Component {
                     </svg>
                 </div>
                 <div className="row no-gutters">
-                    <BoardControl isGameOver={this.isGameOver()}
-                                  isPlayerNext={((isPlayer1Next && (player === player1)) || (!isPlayer1Next && (player === player2)))}
-                                  isColSelected={sCol !== null} player={player} winner={winner} resigner={resigner}
-                                  isPlayer1={player === player1}
-                                  takeTurn={this.takeTurn}/>
+                    <BoardControl/>
                 </div>
             </div>
         )

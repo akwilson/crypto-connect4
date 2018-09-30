@@ -42,7 +42,7 @@ class BoardTabs extends Component {
         }
 
         return (
-            <div className="mb-1">
+            <div className="mb-3">
                 <ul className="nav nav-tabs">
                     {gameTabs}
                 </ul>
