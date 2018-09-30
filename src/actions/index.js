@@ -121,7 +121,17 @@ export const initialiseWeb3 = () => {
         return Connect4Web3.init()
             .then(accounts => {
                 dispatch(web3Init(accounts))
-                return Connect4Web3.getActiveGames().then(games => dispatch(activeGames(games)))
+                return Connect4Web3.getActiveGames().then(games => {
+                    dispatch(activeGames(games))
+                    // HACK for messing with UI stuff, have some games to load from contract first
+                    /*
+                    dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
+                    dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
+                    //dispatch(gameOver({gameId: 4, winner: "0x20B31353e4b21e5C0e54E3d9A9cfB6E80B318d9d"}))
+                    //dispatch(gameDrawn({gameId: 4}))
+                    //dispatch(gameResigned({gameId: 4, resigner: "0x20B31353e4b21e5C0e54E3d9A9cfB6E80B318d9d"}))
+                    */
+                })
             })
             .catch(err => dispatch(errorAction({ gameId: 999, err })))
     }
