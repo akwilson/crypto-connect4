@@ -20,7 +20,11 @@ class BoardTabs extends Component {
         const { games, selectedGame, pendingStart } = this.props
 
         if (!games && !pendingStart) {
-            return (<h4>Waiting for a game to begin. Try challenging someone...!</h4>)
+            return (
+                <div className="mt-4 col-6 offset-3" >
+                    <h5>Waiting for a game to begin. Try challenging someone!</h5>
+                </div>
+            )
         }
 
         const gameTabs = _.map(games, (v, k) => {
