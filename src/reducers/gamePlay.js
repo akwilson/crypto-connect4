@@ -22,7 +22,8 @@ const newGameState = {
     isDraw: false,
     statusMessages: [],
     errorMessage: null,
-    isClaimable: false
+    isClaimable: false,
+    pendingMove: false
 }
 
 function parseGarbage(garbage) {

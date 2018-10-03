@@ -125,6 +125,7 @@ export const initialiseWeb3 = () => {
                     dispatch(activeGames(games))
                     // HACK for messing with UI stuff, have some games to load from contract first
                     /*
+                    dispatch(newGameReceipt("New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
                     dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
                     dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
                     //dispatch(gameOver({gameId: 4, winner: "0x20B31353e4b21e5C0e54E3d9A9cfB6E80B318d9d"}))
@@ -140,7 +141,7 @@ export const initialiseWeb3 = () => {
 export const newGame = players => {
     return dispatch => {
         return Connect4Web3.newGame(players.player, players.opponent)
-            .then(receipt => dispatch(newGameReceipt("New Game", new Date(), receipt.transactionHash)))
+            .then(transactionHash => dispatch(newGameReceipt("New Game", new Date(), transactionHash)))
             .catch(err => dispatch(errorAction({ gameId: 999, err })))
     }
 }
@@ -148,7 +149,7 @@ export const newGame = players => {
 export const nextMove = moveData => {
     return dispatch => {
         return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
-            .then(receipt => dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), receipt.transactionHash)))
+            .then(transactionHash => dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), transactionHash)))
             .catch(err => dispatch(errorAction({ gameId: moveData.gameId, err })))
     }
 }
@@ -156,7 +157,7 @@ export const nextMove = moveData => {
 export const resignGame = resignData => {
     return dispatch => {
         return Connect4Web3.resignGame(resignData.player, resignData.gameId)
-            .then(receipt => dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), receipt.transactionHash)))
+            .then(transactionHash => dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), transactionHash)))
             .catch(err => dispatch(errorAction({ gameId: resignData.gameId, err })))
     }
 }
@@ -164,7 +165,7 @@ export const resignGame = resignData => {
 export const claimWin = gameData => {
     return dispatch => {
         return Connect4Web3.claimWin(gameData.player, gameData.gameId)
-            .then(receipt => dispatch(statusAppend(gameData.gameId, "Win claimed", new Date(), receipt.transactionHash)))
+            .then(transactionHash => dispatch(statusAppend(gameData.gameId, "Win claimed", new Date(), transactionHash)))
             .catch(err => dispatch(errorAction({ gameId: gameData.gameId, err })))
     }
 }

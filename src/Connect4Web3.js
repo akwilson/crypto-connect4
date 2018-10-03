@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x15e29055faa7c7487e116eb8a78f6e191e306fa7"
+const connect4Address = "0x9f8f11f54200ac91a47760ef3a6d723797f633a2"
 
 function now() {
     return Math.round((new Date()).getTime() / 1000)
@@ -177,10 +177,10 @@ class Connect4Web3 extends EventEmitter {
         return new Promise((resolve, reject) => {
             this.connect4.methods.newGame(player, opponent)
                 .send({from: player})
-                .on("receipt", receipt => {
+                .on("transactionHash", transactionHash => {
                     console.log("NewGame txn OK")
-                    console.log(receipt)
-                    resolve(receipt)
+                    console.log(transactionHash)
+                    resolve(transactionHash)
                 })
                 .on("error", err => {
                     console.error("NewGame txn ERR")
@@ -194,10 +194,10 @@ class Connect4Web3 extends EventEmitter {
         return new Promise((resolve, reject) => {
             this.connect4.methods.takeTurn(gameId, column)
                 .send({from: player})
-                .on("receipt", receipt => {
+                .on("transactionHash", transactionHash => {
                     console.log("TakeTurn txn OK")
-                    console.log(receipt)
-                    resolve(receipt)
+                    console.log(transactionHash)
+                    resolve(transactionHash)
                 })
                 .on("error", err => {
                     console.log("TakeTurn txn ERR")
@@ -211,10 +211,10 @@ class Connect4Web3 extends EventEmitter {
         return new Promise((resolve, reject) => {
             this.connect4.methods.resignGame(gameId)
                 .send({from: player})
-                .on("receipt", receipt => {
+                .on("transactionHash", transactionHash => {
                     console.log("Resigned txn OK")
-                    console.log(receipt)
-                    resolve(receipt)
+                    console.log(transactionHash)
+                    resolve(transactionHash)
                 })
                 .on("error", err => {
                     console.log("Resigned txn ERR")
@@ -228,10 +228,10 @@ class Connect4Web3 extends EventEmitter {
         return new Promise((resolve, reject) => {
             this.connect4.methods.claimWin(gameId)
                 .send({from: player})
-                .on("receipt", receipt => {
+                .on("transactionHash", transactionHash => {
                     console.log("ClaimWin txn OK")
-                    console.log(receipt)
-                    resolve(receipt)
+                    console.log(transactionHash)
+                    resolve(transactionHash)
                 })
                 .on("error", err => {
                     console.log("ClaimWin txn ERR")

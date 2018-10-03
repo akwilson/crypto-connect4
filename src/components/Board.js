@@ -21,6 +21,8 @@ const mapStoreToProps = store => {
         tileMargin: store.gamePlay.boardDef.tileMargin,
         tileSize: store.gamePlay.boardDef.tileSize,
 
+        pendingStart: store.gamePlay.pendingStart,
+
         sCol: store.board.selectedCol,
         hCol: store.board.highlightedCol,
 
@@ -91,8 +93,18 @@ class Board extends Component {
     }
 
     render() {
-        const { boardHeight, boardWidth, tileSize, gameId, tileMargin } = this.props
+        const { boardHeight, boardWidth, tileSize, gameId, tileMargin, pendingStart } = this.props
         if (!gameId) {
+            if (pendingStart) {
+                return (
+                    <div className="alert alert-info pend-msg row">
+                        <div className="my-auto">
+                            <h5>Waiting for game start confirmation...</h5>
+                        </div>
+                    </div>
+                )
+            }
+
             return null
         }
 

@@ -5,6 +5,12 @@ import dateFormat from "dateformat"
 const mapStateToProps = store => {
     const selectedGame = store.gamePlay.selectedGame
     const game = selectedGame && store.gamePlay.games ? store.gamePlay.games[selectedGame] : null
+    const gameId = game ? game.gameId : null
+    const pendingStart = store.gamePlay.pendingStart
+
+    if (!gameId && pendingStart && pendingStart.message) {
+        return { statusMessages: [ pendingStart ] }
+    }
 
     return {
         errorMessage: game ? game.errorMessage : "",
