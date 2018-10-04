@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import BoardControl from "./BoardControl"
 import { selectedGridCol, highlightedGridCol, boardDeselect } from "../actions"
 
+import logo from "../connect4.svg"
 import "./Board.css"
 
 const moveToString = move => {
@@ -97,9 +98,12 @@ class Board extends Component {
         if (!gameId) {
             if (pendingStart) {
                 return (
-                    <div className="alert alert-info pend-msg row">
+                    <div className="alert alert-info pend-msg row no-gutters">
                         <div className="my-auto">
-                            <h5>Waiting for game start confirmation...</h5>
+                            <h5>
+                                <img className="App-logo" src={logo} width="20" height="20"/>
+                                <span className="ml-3">Waiting for game start confirmation...</span>
+                            </h5>
                         </div>
                     </div>
                 )

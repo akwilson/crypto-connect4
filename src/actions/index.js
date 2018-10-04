@@ -100,6 +100,11 @@ export const claimWinTimeout = gameId => ({
     }
 })
 
+export const pendingMove = moveData => ({
+    type: "PENDING_MOVE",
+    moveData
+})
+
 export const nextMoveReceivedTimeout = moveData => {
     return dispatch => {
         clearInterval(gameIdIntervalMap[moveData.gameId])
@@ -149,7 +154,10 @@ export const newGame = players => {
 export const nextMove = moveData => {
     return dispatch => {
         return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
-            .then(transactionHash => dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), transactionHash)))
+            .then(transactionHash => {
+                dispatch(pendingMove(moveData))
+                dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), transactionHash))
+            })
             .catch(err => dispatch(errorAction({ gameId: moveData.gameId, err })))
     }
 }
@@ -157,7 +165,10 @@ export const nextMove = moveData => {
 export const resignGame = resignData => {
     return dispatch => {
         return Connect4Web3.resignGame(resignData.player, resignData.gameId)
-            .then(transactionHash => dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), transactionHash)))
+            .then(transactionHash => {
+                dispatch(pendingMove(resignData))
+                dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), transactionHash))
+            })
             .catch(err => dispatch(errorAction({ gameId: resignData.gameId, err })))
     }
 }
@@ -165,7 +176,10 @@ export const resignGame = resignData => {
 export const claimWin = gameData => {
     return dispatch => {
         return Connect4Web3.claimWin(gameData.player, gameData.gameId)
-            .then(transactionHash => dispatch(statusAppend(gameData.gameId, "Win claimed", new Date(), transactionHash)))
+            .then(transactionHash => {
+                dispatch(pendingMove(gameData))
+                dispatch(statusAppend(gameData.gameId, "Win claimed", new Date(), transactionHash))
+            })
             .catch(err => dispatch(errorAction({ gameId: gameData.gameId, err })))
     }
 }

@@ -23,7 +23,7 @@ const newGameState = {
     statusMessages: [],
     errorMessage: null,
     isClaimable: false,
-    pendingMove: false
+    isPendingMove: false
 }
 
 function parseGarbage(garbage) {
@@ -134,7 +134,8 @@ export default (state = initialState, action) => {
                 isPlayer1Next: action.moveData.isPlayer1Next,
                 player1Moves: action.moveData.player === currGame.player1 ? currGame.player1Moves.concat(mv) : currGame.player1Moves,
                 player2Moves: action.moveData.player === currGame.player2 ? currGame.player2Moves.concat(mv) : currGame.player2Moves,
-                isClaimable: false
+                isClaimable: false,
+                isPendingMove: false
             }
 
             return {
@@ -148,7 +149,8 @@ export default (state = initialState, action) => {
         case "GAME_OVER": {
             const game = {
                 ...state.games[action.gameData.gameId],
-                winner: action.gameData.winner
+                winner: action.gameData.winner,
+                isPendingMove: false
             }
 
             return {
@@ -162,7 +164,8 @@ export default (state = initialState, action) => {
         case "GAME_RESIGNED": {
             const game = {
                 ...state.games[action.gameData.gameId],
-                resigner: action.gameData.resigner
+                resigner: action.gameData.resigner,
+                isPendingMove: false
             }
 
             return {
@@ -218,6 +221,20 @@ export default (state = initialState, action) => {
                 games: {
                     ...state.games,
                     [action.gameData.gameId]: game
+                }
+            }
+        }
+        case "PENDING_MOVE": {
+            const game = {
+                ...state.games[action.moveData.gameId],
+                isPendingMove: true
+            }
+
+            return {
+                ...state,
+                games: {
+                    ...state.games,
+                    [action.moveData.gameId]: game
                 }
             }
         }
