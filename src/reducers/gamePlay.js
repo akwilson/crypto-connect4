@@ -1,3 +1,5 @@
+const { mergeGame, tryGameHandler } = require("./gameHandlers.js")
+
 const initialState = {
     boardDef: {
         height: 6,
@@ -24,16 +26,6 @@ const newGameState = {
     errorMessage: null,
     isClaimable: false,
     isPendingMove: false
-}
-
-function parseGarbage(garbage) {
-    const start = garbage.indexOf("revert")
-    if (start >= 0) {
-        return garbage.substring(start + 7)
-    }
-
-    // good luck
-    return garbage
 }
 
 function makeGame(state, gameData) {
@@ -93,6 +85,11 @@ function activateGames(state, games) {
 }
 
 export default (state = initialState, action) => {
+    const newGame = tryGameHandler(state, action)
+    if (newGame) {
+        return newGame
+    }
+
     switch (action.type) {
         case "SWITCH_GAME": {
             if (action.selected >= 0) {
@@ -105,14 +102,9 @@ export default (state = initialState, action) => {
                         title: currGame.title.substring(0, pos)
                     }
 
-                    return {
-                        ...state,
-                        selectedGame: action.selected,
-                        games: {
-                            ...state.games,
-                            [action.selected]: game
-                        }
-                    }
+                    const newGame = mergeGame(state, game, action.selected)
+                    newGame.selectedGame = action.selected
+                    return newGame
                 }
             }
 
@@ -133,92 +125,6 @@ export default (state = initialState, action) => {
 
             return doNewGame(state, ng)
         }
-        case "CHALLENGE_ACCEPTED": {
-            const ng = makeGame(state, action.gameData)
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.gameData.gameId]: ng
-                },
-                selectedGame: action.gameData.gameId
-            }
-        }
-        case "NEXT_MOVE_RECEIVED": {
-            const mv = {
-                row: action.moveData.y,
-                col: action.moveData.x
-            }
-
-            const currGame = state.games[action.moveData.gameId]
-            const game = {
-                ...currGame,
-                isPlayer1Next: action.moveData.isPlayer1Next,
-                player1Moves: action.moveData.player === currGame.player1 ? currGame.player1Moves.concat(mv) : currGame.player1Moves,
-                player2Moves: action.moveData.player === currGame.player2 ? currGame.player2Moves.concat(mv) : currGame.player2Moves,
-                isClaimable: false,
-                isPendingMove: false,
-                title: state.selectedGame !== action.moveData.gameId ? currGame.title += " *" : currGame.title
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.moveData.gameId]: game
-                }
-            }
-        }
-        case "GAME_OVER": {
-            const currGame = state.games[action.gameData.gameId]
-            const game = {
-                ...currGame,
-                winner: action.gameData.winner,
-                title: state.selectedGame !== action.gameData.gameId ? currGame.title += " *" : currGame.title,
-                isPendingMove: false
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.gameData.gameId]: game
-                }
-            }
-        }
-        case "GAME_RESIGNED": {
-            const currGame = state.games[action.gameData.gameId]
-            const game = {
-                ...currGame,
-                resigner: action.gameData.resigner,
-                title: state.selectedGame !== action.gameData.gameId ? currGame.title += " *" : currGame.title,
-                isPendingMove: false
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.gameData.gameId]: game
-                }
-            }
-        }
-        case "GAME_DRAWN": {
-            const currGame = state.games[action.gameData.gameId]
-            const game = {
-                ...currGame,
-                title: state.selectedGame !== action.gameData.gameId ? currGame.title += " *" : currGame.title,
-                isDraw: true
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.gameData.gameId]: game
-                }
-            }
-        }
         case "NEW_GAME_RECEIPT": {
             if (!state.pendingStart) {
                 return {
@@ -230,6 +136,12 @@ export default (state = initialState, action) => {
 
             return doNewGame(state, action.status)
         }
+        case "CHALLENGE_ACCEPTED": {
+            const ng = makeGame(state, action.gameData)
+            const newState = mergeGame(state, ng, action.gameData.gameId)
+            newState.selectedGame = action.gameData.gameId
+            return newState
+        }
         case "ACTIVE_GAMES_LOADED": {
             if (action.games.length) {
                 const rv = activateGames(state, action.games)
@@ -239,62 +151,6 @@ export default (state = initialState, action) => {
 
             return state
         }
-        case "CLAIM_WIN_TIMEOUT": {
-            const game = {
-                ...state.games[action.gameData.gameId],
-                isClaimable: true
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.gameData.gameId]: game
-                }
-            }
-        }
-        case "PENDING_MOVE": {
-            const game = {
-                ...state.games[action.moveData.gameId],
-                isPendingMove: true
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.moveData.gameId]: game
-                }
-            }
-        }
-        case "STATUS_APPEND": {
-            const currGame = state.games[action.statusData.gameId]
-            const game = {
-                ...currGame,
-                statusMessages: currGame.statusMessages.concat(action.statusData.status)
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.statusData.gameId]: game
-                }
-            }
-        }
-        case "ERROR_MSG":
-            const game = {
-                ...state.games[action.errData.gameId],
-                errorMessage: parseGarbage(action.errData.err.message)
-            }
-
-            return {
-                ...state,
-                games: {
-                    ...state.games,
-                    [action.errData.gameId]: game
-                }
-            }
         case "WEB3_INIT": {
             return {
                 ...state,

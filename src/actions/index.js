@@ -10,7 +10,7 @@ export const switchGame = gameId => ({
 
 export const statusAppend = (gameId, sType, date, message) => ({
     type: "STATUS_APPEND",
-    statusData: {
+    gameData: {
         gameId: gameId,
         status: {
             sType,
@@ -59,9 +59,9 @@ export const opponentChange = opponent => ({
     opponent
 })
 
-export const nextMoveReceived = moveData => ({
+export const nextMoveReceived = gameData => ({
     type: "NEXT_MOVE_RECEIVED",
-    moveData
+    gameData
 })
 
 export const web3Init = account => ({
@@ -69,9 +69,9 @@ export const web3Init = account => ({
     account
 })
 
-export const errorAction = errData => ({
+export const errorAction = gameData => ({
     type: "ERROR_MSG",
-    errData
+    gameData
 })
 
 export const globalErrorAction = errData => ({
@@ -105,9 +105,9 @@ export const claimWinTimeout = gameId => ({
     }
 })
 
-export const pendingMove = moveData => ({
+export const pendingMove = gameData => ({
     type: "PENDING_MOVE",
-    moveData
+    gameData
 })
 
 export const nextMoveReceivedTimeout = moveData => {
