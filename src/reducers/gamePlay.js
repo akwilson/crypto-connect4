@@ -94,11 +94,31 @@ function activateGames(state, games) {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case "SWITCH_GAME":
+        case "SWITCH_GAME": {
+            const currGame = state.games[action.selected]
+            const pos = currGame.title.indexOf(" *")
+
+            if (pos != -1) {
+                const game = {
+                    ...currGame,
+                    title: currGame.title.substring(0, pos)
+                }
+
+                return {
+                    ...state,
+                    selectedGame: action.selected,
+                    games: {
+                        ...state.games,
+                        [action.selected]: game
+                    }
+                }
+            }
+
             return {
                 ...state,
                 selectedGame: action.selected
             }
+        }
         case "NEW_GAME_BEGIN": {
             const ng = makeGame(state, action.gameData)
             if (!state.pendingStart) {
@@ -135,7 +155,8 @@ export default (state = initialState, action) => {
                 player1Moves: action.moveData.player === currGame.player1 ? currGame.player1Moves.concat(mv) : currGame.player1Moves,
                 player2Moves: action.moveData.player === currGame.player2 ? currGame.player2Moves.concat(mv) : currGame.player2Moves,
                 isClaimable: false,
-                isPendingMove: false
+                isPendingMove: false,
+                title: state.selectedGame !== action.moveData.gameId ? currGame.title += " *" : currGame.title
             }
 
             return {
@@ -143,7 +164,7 @@ export default (state = initialState, action) => {
                 games: {
                     ...state.games,
                     [action.moveData.gameId]: game
-                },
+                }
             }
         }
         case "GAME_OVER": {
