@@ -25,7 +25,7 @@ class Status extends Component {
         }
 
         let index = 0
-        const sms = statusMessages.map(msg => <tr key={index++}><td>{msg.sType}</td>
+        const sms = statusMessages.map(msg => <tr className="small-text" key={index++}><td>{msg.sType}</td>
             <td>{dateFormat(msg.date, "HH:MM:ss")}</td><td>{msg.message}</td></tr>)
 
         return (
@@ -34,7 +34,7 @@ class Status extends Component {
                     <tr>
                         <th colSpan="3">Transaction Receipts</th>
                     </tr>
-                    <tr>
+                    <tr className="small-text">
                         <th scope="col">Move</th>
                         <th scope="col">Timestamp</th>
                         <th scope="col">Receipt</th>

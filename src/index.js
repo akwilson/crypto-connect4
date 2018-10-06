@@ -10,8 +10,6 @@ import App from "./components/App"
 import c4w3Redux from "./c4w3Redux"
 import registerServiceWorker from "./registerServiceWorker"
 
-import "./index.css"
-
 const middleware = applyMiddleware(c4w3Redux, thunk, logger)
 const store = createStore(rootReducer, middleware)
 

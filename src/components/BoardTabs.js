@@ -3,6 +3,8 @@ import { connect } from "react-redux"
 import _ from "lodash"
 import { switchGame } from "../actions"
 
+import "./BoardTabs.css"
+
 const mapStateToProps = state => {
     return {
         games: state.gamePlay.games,
@@ -39,19 +41,23 @@ class BoardTabs extends Component {
         }
 
         const gameTabs = _.map(games, (v, k) => {
-            const refClasses = `nav-link ${selectedGame === k ? "active" : ""}`
+            //const refClasses = `nav-link ${selectedGame === k ? "active" : ""}`
+            const refClasses = `no-trans btn btn-link nav-link ${selectedGame === k ? "active" : ""}`
             return (
                 <li key={k} className="nav-item">
-                    <a className={refClasses} href="#" onClick={e => this.switch(k)}>{v.title}</a>
+                    {/*<a className={refClasses} href="#" onClick={e => this.switch(k)}>{v.title}</a>*/}
+                    <button className={refClasses} onClick={e => this.switch(k)}>{v.title}</button>
                 </li>
             )
         })
 
         if (pendingStart) {
-            const refClasses = `nav-link ${selectedGame === -1 ? "active" : ""}`
+            //const refClasses = `nav-link ${selectedGame === -1 ? "active" : ""}`
+            const refClasses = `no-trans btn btn-link nav-link ${selectedGame === -1 ? "active" : ""}`
             gameTabs.push(
                 <li key={gameTabs.length} className="nav-item">
-                    <a className={refClasses} href="#" onClick={e => this.switch(-1)}>Pending...</a>
+                    {/*<a className={refClasses} href="#" onClick={e => this.switch(-1)}>Pending...</a>*/}
+                    <button className={refClasses} onClick={e => this.switch(-1)}>Pending...</button>
                 </li>
             )
         }

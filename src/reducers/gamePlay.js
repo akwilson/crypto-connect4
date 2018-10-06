@@ -95,21 +95,23 @@ function activateGames(state, games) {
 export default (state = initialState, action) => {
     switch (action.type) {
         case "SWITCH_GAME": {
-            const currGame = state.games[action.selected]
-            const pos = currGame.title.indexOf(" *")
+            if (action.selected >= 0) {
+                const currGame = state.games[action.selected]
+                const pos = currGame.title.indexOf(" *")
 
-            if (pos !== -1) {
-                const game = {
-                    ...currGame,
-                    title: currGame.title.substring(0, pos)
-                }
+                if (pos !== -1) {
+                    const game = {
+                        ...currGame,
+                        title: currGame.title.substring(0, pos)
+                    }
 
-                return {
-                    ...state,
-                    selectedGame: action.selected,
-                    games: {
-                        ...state.games,
-                        [action.selected]: game
+                    return {
+                        ...state,
+                        selectedGame: action.selected,
+                        games: {
+                            ...state.games,
+                            [action.selected]: game
+                        }
                     }
                 }
             }

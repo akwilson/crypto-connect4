@@ -101,7 +101,7 @@ class Board extends Component {
                     <div className="alert alert-info pend-msg row no-gutters">
                         <div className="my-auto">
                             <h5>
-                                <img className="App-logo" src={logo} width="20" height="20"/>
+                                <img className="App-logo" src={logo} width="20" height="20" alt="Spinnng Connect 4 Logo"/>
                                 <span className="ml-3">Waiting for game start confirmation...</span>
                             </h5>
                         </div>

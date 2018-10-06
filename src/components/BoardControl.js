@@ -93,7 +93,7 @@ class BoardControl extends Component {
 
         let playerIcon
         if (isPendingMove) {
-            playerIcon = <img className="App-logo" src={logo} width="20" height="20"/>
+            playerIcon = <img className="App-logo" src={logo} width="20" height="20" alt="Spinnng Connect 4 Logo"/>
         } else {
             playerIcon = (
                 <svg alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
@@ -103,7 +103,7 @@ class BoardControl extends Component {
         }
 
         return (
-            <div className={"w-100 alert alert-" + (isPlayerNext && !isPendingMove ? "primary" : "secondary")}>
+            <div className={"small-text w-100 alert alert-" + (isPlayerNext && !isPendingMove ? "primary" : "secondary")}>
                 <div className="mb-2">
                     <svg alt="SVG not supported by your browser" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
                         <circle className={isPlayer1 ? "r_p2" : "r_p1"} cx="10" cy="10" r="10"/>
@@ -115,11 +115,11 @@ class BoardControl extends Component {
                     <span className="ml-2 align-middle">{moveText}</span>
                 </div>
                 <div className="row no-gutters">
-                    <button className="col-2 btn btn-primary btn-sm" onClick={e => this.claimWin()}
+                    <button className="col-3 btn btn-primary btn-sm" onClick={e => this.claimWin()}
                         disabled={!this.isClaimable()}>Claim Win</button>
-                    <button className="col-2 btn btn-primary btn-sm ml-1" onClick={e => this.resignGame()}
+                    <button className="col-3 btn btn-primary btn-sm ml-1" onClick={e => this.resignGame()}
                         disabled={isGameOver || isPendingMove}>Resign</button>
-                    <button className="col-2 btn btn-primary btn-sm ml-1" onClick={e => this.takeTurn()}
+                    <button className="col-3 btn btn-primary btn-sm ml-1" onClick={e => this.takeTurn()}
                         disabled={!isPlayerNext || !isColSelected || isPendingMove}>Move</button>
                 </div>
             </div>
