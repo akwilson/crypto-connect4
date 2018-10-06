@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
                 ...state,
                 accounts: {
                     ...state.accounts,
-                    player: action.accounts[0]
+                    player: action.account
                 }
             }
         default:

@@ -2,13 +2,18 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x66b7bcab0a82d44800f4c0cd0586f42906c27702"
+const connect4Address = "0xd3b8bfdc4fa5be996f66a76b0a3d06d84331631e"
 
 function now() {
     return Math.round((new Date()).getTime() / 1000)
 }
 
 class Connect4Web3 extends EventEmitter {
+    constructor() {
+        super()
+        this.eventList = []
+    }
+
     _newGameOk(event) {
         const res = event.returnValues
         console.log(`EVENT: NewGame Id: ${res.gameId} P1: ${res.player1} P2: ${res.player2}`)
@@ -22,7 +27,7 @@ class Connect4Web3 extends EventEmitter {
     }
 
     _registerGameEvents(gameId) {
-        this.connect4Events.events.NextMove({filter: { gameId }})
+        let eventHandle = this.connect4Events.events.NextMove({filter: { gameId }})
             .on("data", event => {
                 const res = event.returnValues
                 console.log(`EVENT NextMove Id: ${res.gameId} player: ${res.player} X: ${res.x} Y: ${res.y} p1n: ${res.isPlayer1Next}`)
@@ -40,8 +45,9 @@ class Connect4Web3 extends EventEmitter {
                 console.error("EVENT NextMove ERROR: " + err)
                 this.emit("GAME_ERROR", { gameId, err })
             })
+        this.eventList.push(eventHandle)
 
-        this.connect4Events.events.Victory({filter: { gameId }})
+        eventHandle = this.connect4Events.events.Victory({filter: { gameId }})
             .on("data", event => {
                 const res = event.returnValues
                 console.log(`EVENT Victory Id: ${res.gameId} Winner: ${res.winner}`)
@@ -56,8 +62,9 @@ class Connect4Web3 extends EventEmitter {
                 console.error("EVENT Victory ERROR: " + err)
                 this.emit("GAME_ERROR", { gameId, err })
             })
+        this.eventList.push(eventHandle)
 
-        this.connect4Events.events.Resigned({filter: { gameId }})
+        eventHandle = this.connect4Events.events.Resigned({filter: { gameId }})
             .on("data", event => {
                 const res = event.returnValues
                 console.log(`EVENT Resigned Id: ${res.gameId} Resigner: ${res.resigner}`)
@@ -72,8 +79,9 @@ class Connect4Web3 extends EventEmitter {
                 console.error("EVENT Resigned ERROR: " + err)
                 this.emit("GAME_ERROR", { gameId, err })
             })
+        this.eventList.push(eventHandle)
 
-        this.connect4Events.events.Draw({filter: { gameId }})
+        eventHandle = this.connect4Events.events.Draw({filter: { gameId }})
             .on("data", event => {
                 const res = event.returnValues
                 console.log(`EVENT Draw Id: ${res.gameId}`)
@@ -83,13 +91,14 @@ class Connect4Web3 extends EventEmitter {
                 console.error("EVENT Draw ERROR: " + err)
                 this.emit("GAME_ERROR", { gameId, err })
             })
+        this.eventList.push(eventHandle)
     }
 
 	_registerEvents() {
     	const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:8545"))
     	this.connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, connect4Address)
 
-    	this.connect4Events.events.NewGame({filter: {player1: this.accountId}})
+    	let eventHandle = this.connect4Events.events.NewGame({filter: {player1: this.accountId}})
         	.on("data", event => {
             	const ngd = this._newGameOk(event)
 				this.emit("NEW_GAME_OK", ngd)
@@ -98,8 +107,9 @@ class Connect4Web3 extends EventEmitter {
 				console.error("EVENT NewGame ERROR: " + err)
 				this.emit("GAME_ERROR", { gameId: 999, err })
 			})
+        this.eventList.push(eventHandle)
 
-    	this.connect4Events.events.NewGame({filter: {player2: this.accountId}})
+    	eventHandle = this.connect4Events.events.NewGame({filter: {player2: this.accountId}})
         	.on("data", event => {
             	const ngd = this._newGameOk(event)
 				this.emit("CHALLENGE_ACCEPTED", ngd)
@@ -108,6 +118,7 @@ class Connect4Web3 extends EventEmitter {
 				console.error("EVENT NewGame ERROR: " + err)
 				this.emit("GAME_ERROR", { gameId: 999, err })
 			})
+        this.eventList.push(eventHandle)
     }
 
     _readActiveGames(gameId, gameInfo, board) {
@@ -136,6 +147,30 @@ class Connect4Web3 extends EventEmitter {
         }
     }
 
+    _clearActiveEvents() {
+        this.eventList.forEach(eventHandle => {
+            eventHandle.unsubscribe()
+        })
+
+        this.eventList = []
+    }
+
+    _accountPoll() {
+        this.accountInterval = setTimeout(() => {
+            this.web3js.eth.getAccounts()
+                .then(accounts => {
+                    if (accounts[0] !== this.accountId) {
+                        this.accountId = accounts[0]
+                        this._clearActiveEvents()
+                        this._registerEvents()
+                        this.emit("ACCOUNT_CHANGED", this.accountId)
+                    }
+
+                    this._accountPoll()
+                })
+            }, 2000);
+    }
+
     init() {
 		if (typeof web3 !== "undefined") {
 			this.web3js = new Web3(window.web3.currentProvider)
@@ -154,7 +189,9 @@ class Connect4Web3 extends EventEmitter {
         	.then(accounts => {
                 this.accountId = accounts[0]
             	this._registerEvents()
-				return accounts
+
+                this._accountPoll()
+				return this.accountId
         	})
 	}
 
@@ -173,10 +210,10 @@ class Connect4Web3 extends EventEmitter {
             })
     }
 
-    newGame(player, opponent) {
+    newGame(opponent) {
         return new Promise((resolve, reject) => {
-            this.connect4.methods.newGame(player, opponent)
-                .send({from: player})
+            this.connect4.methods.newGame(this.accountId, opponent)
+                .send({from: this.accountId})
                 .on("transactionHash", transactionHash => {
                     console.log("NewGame txn OK")
                     console.log(transactionHash)
@@ -190,10 +227,10 @@ class Connect4Web3 extends EventEmitter {
         })
     }
 
-    takeTurn(player, gameId, column) {
+    takeTurn(gameId, column) {
         return new Promise((resolve, reject) => {
             this.connect4.methods.takeTurn(gameId, column)
-                .send({from: player})
+                .send({from: this.accountId})
                 .on("transactionHash", transactionHash => {
                     console.log("TakeTurn txn OK")
                     console.log(transactionHash)
@@ -207,10 +244,10 @@ class Connect4Web3 extends EventEmitter {
         })
     }
 
-    resignGame(player, gameId) {
+    resignGame(gameId) {
         return new Promise((resolve, reject) => {
             this.connect4.methods.resignGame(gameId)
-                .send({from: player})
+                .send({from: this.accountId})
                 .on("transactionHash", transactionHash => {
                     console.log("Resigned txn OK")
                     console.log(transactionHash)
@@ -224,10 +261,10 @@ class Connect4Web3 extends EventEmitter {
         })
     }
 
-    claimWin(player, gameId) {
+    claimWin(gameId) {
         return new Promise((resolve, reject) => {
             this.connect4.methods.claimWin(gameId)
-                .send({from: player})
+                .send({from: this.accountId})
                 .on("transactionHash", transactionHash => {
                     console.log("ClaimWin txn OK")
                     console.log(transactionHash)

@@ -64,9 +64,9 @@ export const nextMoveReceived = moveData => ({
     moveData
 })
 
-export const web3Init = accounts => ({
+export const web3Init = account => ({
     type: "WEB3_INIT",
-    accounts
+    account
 })
 
 export const errorAction = errData => ({
@@ -121,23 +121,37 @@ export const challengeAcceptedTimeout = gameData => {
     }
 }
 
+export const accountChanged = account => {
+    return dispatch => {
+        dispatch(web3Init(account))
+        return Connect4Web3.getActiveGames()
+            .then(games => {
+                dispatch(activeGames(games))
+            })
+            .catch(err => dispatch(errorAction({ gameId: 999, err })))
+    }
+}
+
 export const initialiseWeb3 = () => {
     return dispatch => {
         return Connect4Web3.init()
-            .then(accounts => {
+            .then(account => {
+                if (account) {
+                    dispatch(accountChanged(account))
+                }
+                    /*
                 dispatch(web3Init(accounts))
                 return Connect4Web3.getActiveGames().then(games => {
                     dispatch(activeGames(games))
                     // HACK for messing with UI stuff, have some games to load from contract first
-                    /*
-                    dispatch(newGameReceipt("New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
-                    dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
-                    dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
+                    //dispatch(newGameReceipt("New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
+                    //dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
+                    //dispatch(statusAppend(4, "New Game", new Date(), "0x0a0c7987af23de7cb223323803da591bd390099ab87af88ea2e95272bdaa0049"))
                     //dispatch(gameOver({gameId: 4, winner: "0x20B31353e4b21e5C0e54E3d9A9cfB6E80B318d9d"}))
                     //dispatch(gameDrawn({gameId: 4}))
                     //dispatch(gameResigned({gameId: 4, resigner: "0x20B31353e4b21e5C0e54E3d9A9cfB6E80B318d9d"}))
-                    */
                 })
+                    */
             })
             .catch(err => dispatch(errorAction({ gameId: 999, err })))
     }
@@ -145,7 +159,7 @@ export const initialiseWeb3 = () => {
 
 export const newGame = players => {
     return dispatch => {
-        return Connect4Web3.newGame(players.player, players.opponent)
+        return Connect4Web3.newGame(players.opponent)
             .then(transactionHash => dispatch(newGameReceipt("New Game", new Date(), transactionHash)))
             .catch(err => dispatch(errorAction({ gameId: 999, err })))
     }
@@ -153,7 +167,7 @@ export const newGame = players => {
 
 export const nextMove = moveData => {
     return dispatch => {
-        return Connect4Web3.takeTurn(moveData.player, moveData.gameId, moveData.column)
+        return Connect4Web3.takeTurn(moveData.gameId, moveData.column)
             .then(transactionHash => {
                 dispatch(pendingMove(moveData))
                 dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), transactionHash))
@@ -164,7 +178,7 @@ export const nextMove = moveData => {
 
 export const resignGame = resignData => {
     return dispatch => {
-        return Connect4Web3.resignGame(resignData.player, resignData.gameId)
+        return Connect4Web3.resignGame(resignData.gameId)
             .then(transactionHash => {
                 dispatch(pendingMove(resignData))
                 dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), transactionHash))
@@ -175,7 +189,7 @@ export const resignGame = resignData => {
 
 export const claimWin = gameData => {
     return dispatch => {
-        return Connect4Web3.claimWin(gameData.player, gameData.gameId)
+        return Connect4Web3.claimWin(gameData.gameId)
             .then(transactionHash => {
                 dispatch(pendingMove(gameData))
                 dispatch(statusAppend(gameData.gameId, "Win claimed", new Date(), transactionHash))

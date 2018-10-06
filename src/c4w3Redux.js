@@ -30,6 +30,10 @@ export default store => {
         store.dispatch(actions.gameDrawn(gameData))
     })
 
+    c4Web3.on("ACCOUNT_CHANGED", account => {
+        store.dispatch(actions.accountChanged(account))
+    })
+
 	return next => action => {
 		next(action)
 	}

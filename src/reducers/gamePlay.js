@@ -98,7 +98,7 @@ export default (state = initialState, action) => {
             const currGame = state.games[action.selected]
             const pos = currGame.title.indexOf(" *")
 
-            if (pos != -1) {
+            if (pos !== -1) {
                 const game = {
                     ...currGame,
                     title: currGame.title.substring(0, pos)
@@ -168,9 +168,11 @@ export default (state = initialState, action) => {
             }
         }
         case "GAME_OVER": {
+            const currGame = state.games[action.gameData.gameId]
             const game = {
-                ...state.games[action.gameData.gameId],
+                ...currGame,
                 winner: action.gameData.winner,
+                title: state.selectedGame !== action.gameData.gameId ? currGame.title += " *" : currGame.title,
                 isPendingMove: false
             }
 
@@ -183,9 +185,11 @@ export default (state = initialState, action) => {
             }
         }
         case "GAME_RESIGNED": {
+            const currGame = state.games[action.gameData.gameId]
             const game = {
-                ...state.games[action.gameData.gameId],
+                ...currGame,
                 resigner: action.gameData.resigner,
+                title: state.selectedGame !== action.gameData.gameId ? currGame.title += " *" : currGame.title,
                 isPendingMove: false
             }
 
@@ -198,8 +202,10 @@ export default (state = initialState, action) => {
             }
         }
         case "GAME_DRAWN": {
+            const currGame = state.games[action.gameData.gameId]
             const game = {
-                ...state.games[action.gameData.gameId],
+                ...currGame,
+                title: state.selectedGame !== action.gameData.gameId ? currGame.title += " *" : currGame.title,
                 isDraw: true
             }
 
@@ -287,6 +293,14 @@ export default (state = initialState, action) => {
                     [action.errData.gameId]: game
                 }
             }
+        case "WEB3_INIT": {
+            return {
+                ...state,
+                pendingStart: null,
+                games: null,
+                selectedGame: null
+            }
+        }
         default:
             return state
     }

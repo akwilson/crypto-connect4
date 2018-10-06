@@ -18,8 +18,7 @@ class BoardControl extends Component {
     takeTurn() {
         const moveData = {
             gameId: this.props.gameId,
-            column: this.props.selectedCol,
-            player: this.props.player
+            column: this.props.selectedCol
         }
 
         this.props.dispatch(nextMove(moveData))
@@ -28,7 +27,6 @@ class BoardControl extends Component {
     resignGame() {
         if (window.confirm("Resign game, are you sure?")) {
             this.props.dispatch(resignGame({
-                player: this.props.player,
                 gameId: this.props.gameId
             }))
         }
@@ -37,7 +35,6 @@ class BoardControl extends Component {
     claimWin() {
         if (window.confirm("Claim win, are you sure?")) {
             this.props.dispatch(claimWin({
-                player: this.props.player,
                 gameId: this.props.gameId
             }))
         }
