@@ -3,14 +3,25 @@ import { connect } from "react-redux"
 import Web3 from "web3"
 import { opponentChange, newGame } from "../actions"
 
-const mapStateToProps = state => {
-    return { accounts: state.pageUI.accounts }
+const mapStoreToProps = store => {
+    return {
+        accounts: store.pageUI.accounts,
+        isPendingStart: store.gamePlay.pendingStart !== null
+    }
+}
+
+function isValidOpponent(opponent, player) {
+    return opponent && opponent !== player && Web3.utils.isAddress(opponent)
 }
 
 class Challenger extends Component {
     isChallengable() {
-        const opponent = this.props.accounts.opponent
-        return opponent && opponent !== this.props.accounts.player && Web3.utils.isAddress(opponent)
+        const { accounts, isPendingStart } = this.props
+        if (isPendingStart) {
+            return false
+        }
+
+        return isValidOpponent(accounts.opponent, accounts.player)
     }
 
     doChallenge() {
@@ -46,4 +57,4 @@ class Challenger extends Component {
     }
 }
 
-export default connect(mapStateToProps)(Challenger)
+export default connect(mapStoreToProps)(Challenger)
