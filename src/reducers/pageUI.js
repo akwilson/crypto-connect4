@@ -2,7 +2,8 @@ const initialState = {
     accounts: {
         player: null,
         opponent: ""
-    }
+    },
+    globalError: null
 }
 
 export default (state = initialState, action) => {
@@ -22,6 +23,11 @@ export default (state = initialState, action) => {
                     ...state.accounts,
                     player: action.account
                 }
+            }
+        case "GLOBAL_ERROR_MSG":
+            return {
+                ...state,
+                globalError: action.errData.message
             }
         default:
             return state

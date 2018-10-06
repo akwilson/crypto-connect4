@@ -7,7 +7,8 @@ const mapStateToProps = state => {
     return {
         games: state.gamePlay.games,
         selectedGame: state.gamePlay.selectedGame,
-        pendingStart: state.gamePlay.pendingStart
+        pendingStart: state.gamePlay.pendingStart,
+        globalError: state.pageUI.globalError
     }
 }
 
@@ -17,7 +18,17 @@ class BoardTabs extends Component {
     }
 
     render() {
-        const { games, selectedGame, pendingStart } = this.props
+        const { games, selectedGame, pendingStart, globalError } = this.props
+
+        if (globalError) {
+            return (
+                <div className="alert alert-danger">
+                    <h5>Something went wrong :-(</h5>
+                    <hr></hr>
+                    <span>{globalError}</span>
+                </div>
+            )
+        }
 
         if (!games && !pendingStart) {
             return (

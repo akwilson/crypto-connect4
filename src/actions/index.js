@@ -74,6 +74,11 @@ export const errorAction = errData => ({
     errData
 })
 
+export const globalErrorAction = errData => ({
+    type: "GLOBAL_ERROR_MSG",
+    errData
+})
+
 export const selectedGridCol = column => ({
     type: "SELECTED_GRID_COL",
     column
@@ -128,7 +133,7 @@ export const accountChanged = account => {
             .then(games => {
                 dispatch(activeGames(games))
             })
-            .catch(err => dispatch(errorAction({ gameId: 999, err })))
+            .catch(err => dispatch(globalErrorAction(err)))
     }
 }
 
@@ -153,7 +158,7 @@ export const initialiseWeb3 = () => {
                 })
                     */
             })
-            .catch(err => dispatch(errorAction({ gameId: 999, err })))
+            .catch(err => dispatch(globalErrorAction(err)))
     }
 }
 
@@ -161,7 +166,7 @@ export const newGame = players => {
     return dispatch => {
         return Connect4Web3.newGame(players.opponent)
             .then(transactionHash => dispatch(newGameReceipt("New Game", new Date(), transactionHash)))
-            .catch(err => dispatch(errorAction({ gameId: 999, err })))
+            .catch(err => dispatch(globalErrorAction(err)))
     }
 }
 

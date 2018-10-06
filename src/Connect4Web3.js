@@ -105,7 +105,7 @@ class Connect4Web3 extends EventEmitter {
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)
-				this.emit("GAME_ERROR", { gameId: 999, err })
+				this.emit("INIT_ERROR", { err })
 			})
         this.eventList.push(eventHandle)
 
@@ -116,7 +116,7 @@ class Connect4Web3 extends EventEmitter {
         	})
         	.on("error", err => {
 				console.error("EVENT NewGame ERROR: " + err)
-				this.emit("GAME_ERROR", { gameId: 999, err })
+				this.emit("INIT_ERROR", { err })
 			})
         this.eventList.push(eventHandle)
     }

@@ -14,6 +14,10 @@ export default store => {
         store.dispatch(actions.errorAction(errData))
     })
 
+    c4Web3.on("INIT_ERROR", errData => {
+        store.dispatch(actions.globalErrorAction(errData))
+    })
+
     c4Web3.on("NEXT_MOVE_OK", moveData => {
         store.dispatch(actions.nextMoveReceivedTimeout(moveData))
     })
