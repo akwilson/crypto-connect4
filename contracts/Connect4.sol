@@ -74,6 +74,18 @@ contract Connect4 {
                 _findSame(_game, _x, _y, [int8(0), -1, 0, 1]));
     }
 
+    function _isGameDrawn(Game _game) private view returns(bool) {
+        for (uint8 i = 0; i < boardWidth; i++) {
+            for (uint8 j = 0; j < boardHeight; j++) {
+                if (_game.usedTiles[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     function newGame(address _player1, address _player2) public {
         Game memory game;
         game.player1 = _player1;
@@ -113,6 +125,9 @@ contract Connect4 {
         if (_isGameOver(game, _x, y)) {
             _markGameOver(game);
             emit Victory(_gameId, msg.sender);
+        } else if (_isGameDrawn(game)) {
+            _markGameOver(game);
+            emit Draw(_gameId);
         }
 
         // V2
