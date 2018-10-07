@@ -4,6 +4,8 @@ circle.r_select { fill:#3080d0; }
 circle.r_p1 { fill:#ff3333; }
 circle.r_p2 { fill:#ecff23; }
 
+circle.clicker { cursor:pointer; }
+
 .pend-msg {
     width: 455px;
 }

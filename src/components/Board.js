@@ -71,7 +71,7 @@ class Board extends Component {
         const colMargin = (col % boardWidth ? tileMargin : 0) * col
         const rowMargin = (row % boardHeight ? tileMargin : 0) * row
         return (
-            <circle key={index} className={cName} cx={(col * tileSize * 2) + tileSize + colMargin}
+            <circle key={index} className={"clicker " + cName} cx={(col * tileSize * 2) + tileSize + colMargin}
                 cy={(row * tileSize * 2) + tileSize + rowMargin} r={tileSize}
                 onClick={e => this.selectColumn(col)} onMouseOver={e => this.highlightColumn(col)}/>
         )
