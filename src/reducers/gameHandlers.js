@@ -8,8 +8,7 @@ const gameMoveHandlerMap = {
 const gameHandlerMap = {
     "CLAIM_WIN_TIMEOUT": (state, action) => ({ ...state, isClaimable: true }),
     "PENDING_MOVE": (state, action) => ({ ...state, isPendingMove: true }),
-    "STATUS_APPEND": (state, action) => ({ ...state, statusMessages: state.statusMessages.concat(action.gameData.status) }),
-    "ERROR_MSG": (state, action) => ({ ...state, errorMessage: parseGarbage(action.gameData.err.message) })
+    "STATUS_APPEND": (state, action) => ({ ...state, statusMessages: state.statusMessages.concat(action.gameData.status) })
 }
 
 function nextMoveReceived(state, action) {
@@ -47,7 +46,6 @@ function mergeGame(state, game, index) {
         }
     }
 }
-
 
 function tryGameHandler(state, action) {
     let gameHandler = gameHandlerMap[action.type]

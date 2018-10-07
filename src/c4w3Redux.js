@@ -11,10 +11,6 @@ export default store => {
     })
 
     c4Web3.on("GAME_ERROR", errData => {
-        store.dispatch(actions.errorAction(errData))
-    })
-
-    c4Web3.on("INIT_ERROR", errData => {
         store.dispatch(actions.globalErrorAction(errData))
     })
 

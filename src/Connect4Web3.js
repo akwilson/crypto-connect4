@@ -40,7 +40,7 @@ class Connect4Web3 extends EventEmitter {
                 this.emit("NEXT_MOVE_OK", moveData)
             })
             .on("error", err => {
-                this.emit("GAME_ERROR", { gameId, err })
+                this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
 
@@ -55,7 +55,7 @@ class Connect4Web3 extends EventEmitter {
                 this.emit("GAME_OVER_OK", gameData)
             })
             .on("error", err => {
-                this.emit("GAME_ERROR", { gameId, err })
+                this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
 
@@ -70,7 +70,7 @@ class Connect4Web3 extends EventEmitter {
                 this.emit("GAME_RESIGNED_OK", gameData)
             })
             .on("error", err => {
-                this.emit("GAME_ERROR", { gameId, err })
+                this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
 
@@ -80,7 +80,7 @@ class Connect4Web3 extends EventEmitter {
                 this.emit("GAME_DRAW_OK", { gameId: res.gameId })
             })
             .on("error", err => {
-                this.emit("GAME_ERROR", { gameId, err })
+                this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
     }
@@ -95,7 +95,7 @@ class Connect4Web3 extends EventEmitter {
 				this.emit("NEW_GAME_OK", ngd)
         	})
         	.on("error", err => {
-				this.emit("INIT_ERROR", { err })
+				this.emit("GAME_ERROR", err)
 			})
         this.eventList.push(eventHandle)
 
@@ -105,7 +105,7 @@ class Connect4Web3 extends EventEmitter {
 				this.emit("CHALLENGE_ACCEPTED", ngd)
         	})
         	.on("error", err => {
-				this.emit("INIT_ERROR", { err })
+				this.emit("GAME_ERROR", err)
 			})
         this.eventList.push(eventHandle)
     }

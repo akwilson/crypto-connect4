@@ -69,14 +69,13 @@ export const web3Init = account => ({
     account
 })
 
-export const errorAction = gameData => ({
-    type: "ERROR_MSG",
-    gameData
-})
-
 export const globalErrorAction = errData => ({
     type: "GLOBAL_ERROR_MSG",
     errData
+})
+
+export const clearError = () => ({
+    type: "CLEAR_ERROR_MSG"
 })
 
 export const selectedGridCol = column => ({
@@ -158,6 +157,7 @@ export const initialiseWeb3 = () => {
 
 export const newGame = players => {
     return dispatch => {
+        dispatch(clearError())
         return Connect4Web3.newGame(players.opponent)
             .then(transactionHash => dispatch(newGameReceipt("New Game", new Date(), transactionHash)))
             .catch(err => dispatch(globalErrorAction(err)))
@@ -166,33 +166,36 @@ export const newGame = players => {
 
 export const nextMove = moveData => {
     return dispatch => {
+        dispatch(clearError())
         return Connect4Web3.takeTurn(moveData.gameId, moveData.column)
             .then(transactionHash => {
                 dispatch(pendingMove(moveData))
                 dispatch(statusAppend(moveData.gameId, "Next Move", new Date(), transactionHash))
             })
-            .catch(err => dispatch(errorAction({ gameId: moveData.gameId, err })))
+            .catch(err => dispatch(globalErrorAction(err)))
     }
 }
 
 export const resignGame = resignData => {
     return dispatch => {
+        dispatch(clearError())
         return Connect4Web3.resignGame(resignData.gameId)
             .then(transactionHash => {
                 dispatch(pendingMove(resignData))
                 dispatch(statusAppend(resignData.gameId, "Resigned", new Date(), transactionHash))
             })
-            .catch(err => dispatch(errorAction({ gameId: resignData.gameId, err })))
+            .catch(err => dispatch(globalErrorAction(err)))
     }
 }
 
 export const claimWin = gameData => {
     return dispatch => {
+        dispatch(clearError())
         return Connect4Web3.claimWin(gameData.gameId)
             .then(transactionHash => {
                 dispatch(pendingMove(gameData))
                 dispatch(statusAppend(gameData.gameId, "Win claimed", new Date(), transactionHash))
             })
-            .catch(err => dispatch(errorAction({ gameId: gameData.gameId, err })))
+            .catch(err => dispatch(globalErrorAction(err)))
     }
 }

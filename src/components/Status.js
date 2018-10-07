@@ -13,7 +13,6 @@ const mapStateToProps = store => {
     }
 
     return {
-        errorMessage: game ? game.errorMessage : "",
         statusMessages: game ? game.statusMessages : []
     }
 }
@@ -48,19 +47,13 @@ class Status extends Component {
     }
 
     render() {
-        const { statusMessages, errorMessage } = this.props
-
-        let err
-        if (errorMessage) {
-            err = <div className="alert alert-danger">{errorMessage}</div>
-        }
+        const { statusMessages } = this.props
 
         return (
             <div className="ml-3 w-60">
                 <div>
                     {this.buildStatusTable(statusMessages)}
                 </div>
-                {err}
             </div>
         )
     }

@@ -29,6 +29,11 @@ export default (state = initialState, action) => {
                 ...state,
                 globalError: action.errData.message
             }
+        case "CLEAR_ERROR_MSG":
+            return {
+                ...state,
+                globalError: null
+            }
         default:
             return state
     }

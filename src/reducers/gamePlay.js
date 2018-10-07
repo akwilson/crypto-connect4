@@ -23,7 +23,6 @@ const newGameState = {
     resigner: null,
     isDraw: false,
     statusMessages: [],
-    errorMessage: null,
     isClaimable: false,
     isPendingMove: false
 }
