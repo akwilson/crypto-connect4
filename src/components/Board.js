@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 import BoardControl from "./BoardControl"
-import { selectedGridCol, highlightedGridCol, boardDeselect } from "../actions"
+import { selectedGridCol, highlightedGridCol, boardDeselect } from "../actions/board"
 
 import logo from "../connect4.svg"
 import "./Board.css"

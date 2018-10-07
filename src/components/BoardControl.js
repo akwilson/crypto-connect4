@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
-import { nextMove, resignGame, claimWin } from "../actions"
+import { nextMove, resignGame, claimWin } from "../actions/gamePlayThunks"
 import logo from "../connect4.svg"
 
 const mapStoreToProps = store => {

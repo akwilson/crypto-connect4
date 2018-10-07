@@ -1,7 +1,8 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 import Web3 from "web3"
-import { opponentChange, newGame } from "../actions"
+import { opponentChange } from "../actions/pageUI"
+import { newGame } from "../actions/gamePlayThunks"
 
 const mapStoreToProps = store => {
     return {
