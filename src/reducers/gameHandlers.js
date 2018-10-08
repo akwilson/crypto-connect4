@@ -1,7 +1,7 @@
 const gameMoveHandlerMap = {
     "NEXT_MOVE_RECEIVED": nextMoveReceived,
-    "GAME_OVER": (state, action) => ({ ...state, winner: action.gameData.winner, isPendingMove: false}),
-    "GAME_DRAW": (state, action) => ({ ...state, isDraw: true, isPendingMove: false }),
+    "GAME_OVER": (state, action) => ({ ...state, winner: action.gameData.winner, isPendingMove: false }),
+    "GAME_DRAWN": (state, action) => ({ ...state, isDraw: true, isPendingMove: false }),
     "GAME_RESIGNED": (state, action) => ({ ...state, resigner: action.gameData.resigner, isPendingMove: false })
 }
 
@@ -25,16 +25,6 @@ function nextMoveReceived(state, action) {
         isClaimable: false,
         isPendingMove: false
     }
-}
-
-function parseGarbage(garbage) {
-    const start = garbage.indexOf("revert")
-    if (start >= 0) {
-        return garbage.substring(start + 7)
-    }
-
-    // good luck
-    return garbage
 }
 
 function mergeGame(state, game, index) {

@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0xd3b8bfdc4fa5be996f66a76b0a3d06d84331631e"
+const connect4Address = "0x1f14f09864b1039667927199feba35cb4e356a2f"
 
 function now() {
     return Math.round((new Date()).getTime() / 1000)
