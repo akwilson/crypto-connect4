@@ -86,16 +86,18 @@ contract Connect4 {
         return true;
     }
 
-    function newGame(address _player1, address _player2) public {
+    function newGame(address _player2) public {
+        address player1 = msg.sender;
+
         Game memory game;
-        game.player1 = _player1;
+        game.player1 = player1;
         game.player2 = _player2;
         game.isOver = false;
         game.isPlayer1Next = true;
         game.claimTime = uint32(now + claimWindow);
 
         uint id = games.push(game) - 1;
-        activeGames[_player1]++;
+        activeGames[player1]++;
         activeGames[_player2]++;
 
         emit NewGame(game.player1, game.player2, id);

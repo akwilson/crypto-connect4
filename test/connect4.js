@@ -9,7 +9,7 @@ contract('Connect4', accounts => {
 
     contract("Play game", () => {
         it("should create a new game", async () => {
-            const result = await instance.newGame(accounts[0], accounts[1])
+            const result = await instance.newGame(accounts[1])
             assert.equal(result.logs[0].event, "NewGame")
             assert.equal(result.logs[0].args.gameId.valueOf(), 0, "Game ID should be 0")
             assert.equal(result.logs[0].args.player1.valueOf(), accounts[0], "Wrong player1 address")
@@ -22,7 +22,7 @@ contract('Connect4', accounts => {
             assert.equal(newGame[3], true, "Player 1 should be next")
         })
         it("should accept legal move", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             const result = await instance.takeTurn(0, 3)
             assert.equal(result.logs.length, 1)
@@ -37,7 +37,7 @@ contract('Connect4', accounts => {
             assert.equal(newGame[3], false, "Player 2 should be next")
         })
         it("should reject move outside board size", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             try {
                 await instance.takeTurn(0, 9)
@@ -47,7 +47,7 @@ contract('Connect4', accounts => {
             }
         })
         it("should reject if column is full", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 0)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -63,8 +63,8 @@ contract('Connect4', accounts => {
             }
         })
         it("getBoard for single game", async () => {
-            await instance.newGame(accounts[0], accounts[1])
-            await instance.newGame(accounts[0], accounts[2])
+            await instance.newGame(accounts[1])
+            await instance.newGame(accounts[2])
 
             let result = await instance.getGamesByPlayer({from: accounts[0]})
             assert.equal(result.length, 2, "Player 1 should have two games")
@@ -83,9 +83,9 @@ contract('Connect4', accounts => {
 
     contract("Detect end game", () => {
         it("detect game complete, vertical", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
             // used to test getGamesByPlayer()
-            await instance.newGame(accounts[0], accounts[2])
+            await instance.newGame(accounts[2])
 
             await instance.takeTurn(0, 0)
             await instance.takeTurn(0, 1, {from: accounts[1]})
@@ -115,7 +115,7 @@ contract('Connect4', accounts => {
             assert.equal(games[0], 1, "Player 3 plays in game 1")
         })
         it("detect game complete, horizontal", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -138,7 +138,7 @@ contract('Connect4', accounts => {
             }
         })
         it("detect game complete, diagonal", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 3)
             await instance.takeTurn(0, 3, {from: accounts[1]})
@@ -160,7 +160,7 @@ contract('Connect4', accounts => {
 
     contract("Handle resignations", () => {
         it("first player resigns", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -172,7 +172,7 @@ contract('Connect4', accounts => {
             assert.equal(result.logs[0].args.resigner.valueOf(), accounts[0], "Wrong resigner")
         })
         it("second player resigns", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
 
@@ -183,8 +183,8 @@ contract('Connect4', accounts => {
             assert.equal(result.logs[0].args.resigner.valueOf(), accounts[1], "Wrong resigner")
         })
         it("getGamesByPlayer after resignation", async () => {
-            await instance.newGame(accounts[0], accounts[1])
-            await instance.newGame(accounts[0], accounts[2])
+            await instance.newGame(accounts[1])
+            await instance.newGame(accounts[2])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -202,7 +202,7 @@ contract('Connect4', accounts => {
             assert.equal(games[0], 1, "Player 3 plays in game 1")
         })
         it("third player resigns should reject", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -215,7 +215,7 @@ contract('Connect4', accounts => {
             }
         })
         it("Can't resign if game over", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -232,7 +232,7 @@ contract('Connect4', accounts => {
 
     contract("Claim win", () => {
         it("Reject when wrong player", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -245,7 +245,7 @@ contract('Connect4', accounts => {
             }
         })
         it("Reject when claim within window", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -258,7 +258,7 @@ contract('Connect4', accounts => {
             }
         })
         it("Can't claim win if game over", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 1)
             await instance.takeTurn(0, 0, {from: accounts[1]})
@@ -275,7 +275,7 @@ contract('Connect4', accounts => {
 
     contract("Detects draw", () => {
         it ("detects draw when grid is full and no winner", async () => {
-            await instance.newGame(accounts[0], accounts[1])
+            await instance.newGame(accounts[1])
 
             await instance.takeTurn(0, 2)
             await instance.takeTurn(0, 3, {from: accounts[1]})

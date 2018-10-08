@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x1f14f09864b1039667927199feba35cb4e356a2f"
+const connect4Address = "0xba45f89f0d130531c0f497f05945f856473e7934"
 
 function now() {
     return Math.round((new Date()).getTime() / 1000)
@@ -200,7 +200,7 @@ class Connect4Web3 extends EventEmitter {
 
     newGame(opponent) {
         return new Promise((resolve, reject) => {
-            this.connect4.methods.newGame(this.accountId, opponent)
+            this.connect4.methods.newGame(opponent)
                 .send({from: this.accountId})
                 .on("transactionHash", transactionHash => {
                     resolve(transactionHash)
