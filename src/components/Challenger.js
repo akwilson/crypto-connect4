@@ -36,6 +36,16 @@ class Challenger extends Component {
     render() {
         const accounts = this.props.accounts
 
+        if (!accounts.player) {
+            return  (
+                <div className="alert alert-info mb-2">
+                    <h5>Welcome to Crypto Connect 4</h5>
+                    <hr></hr>
+                    <span>Unlock a MetaMask wallet to begin</span>
+                </div>
+           )
+        }
+
         return (
             <div className="card mb-2">
                 <div className="card-body">

@@ -7,6 +7,7 @@ import "./BoardTabs.css"
 
 const mapStateToProps = state => {
     return {
+        player: state.pageUI.accounts.player,
         games: state.gamePlay.games,
         selectedGame: state.gamePlay.selectedGame,
         pendingStart: state.gamePlay.pendingStart,
@@ -20,7 +21,7 @@ class BoardTabs extends Component {
     }
 
     render() {
-        const { games, selectedGame, pendingStart, globalError } = this.props
+        const { player, games, selectedGame, pendingStart, globalError } = this.props
 
         if (globalError) {
             return (
@@ -30,6 +31,10 @@ class BoardTabs extends Component {
                     <span>{globalError}</span>
                 </div>
             )
+        }
+
+        if (!player) {
+            return null
         }
 
         if (!games && !pendingStart) {

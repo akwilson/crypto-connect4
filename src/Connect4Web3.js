@@ -85,28 +85,28 @@ class Connect4Web3 extends EventEmitter {
         this.eventList.push(eventHandle)
     }
 
-	_registerEvents() {
-    	const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:8545"))
-    	this.connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, connect4Address)
+    _registerEvents() {
+        const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:8545"))
+        this.connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, connect4Address)
 
-    	let eventHandle = this.connect4Events.events.NewGame({filter: {player1: this.accountId}})
-        	.on("data", event => {
-            	const ngd = this._newGameOk(event)
-				this.emit("NEW_GAME_OK", ngd)
-        	})
-        	.on("error", err => {
-				this.emit("GAME_ERROR", err)
-			})
+        let eventHandle = this.connect4Events.events.NewGame({filter: {player1: this.accountId}})
+            .on("data", event => {
+                const ngd = this._newGameOk(event)
+                this.emit("NEW_GAME_OK", ngd)
+            })
+            .on("error", err => {
+                this.emit("GAME_ERROR", err)
+            })
         this.eventList.push(eventHandle)
 
-    	eventHandle = this.connect4Events.events.NewGame({filter: {player2: this.accountId}})
-        	.on("data", event => {
-            	const ngd = this._newGameOk(event)
-				this.emit("CHALLENGE_ACCEPTED", ngd)
-        	})
-        	.on("error", err => {
-				this.emit("GAME_ERROR", err)
-			})
+        eventHandle = this.connect4Events.events.NewGame({filter: {player2: this.accountId}})
+            .on("data", event => {
+                const ngd = this._newGameOk(event)
+                this.emit("CHALLENGE_ACCEPTED", ngd)
+            })
+            .on("error", err => {
+                this.emit("GAME_ERROR", err)
+            })
         this.eventList.push(eventHandle)
     }
 
@@ -161,27 +161,27 @@ class Connect4Web3 extends EventEmitter {
     }
 
     init() {
-		if (typeof web3 !== "undefined") {
-			this.web3js = new Web3(window.web3.currentProvider)
-		} else {
-			return Promise.reject(new Error("Missing web3"))
-		}
+        if (typeof web3 !== "undefined") {
+            this.web3js = new Web3(window.web3.currentProvider)
+        } else {
+            return Promise.reject(new Error("You need to install MetaMask to play, see https://metamask.io/"))
+        }
 
         try {
-		    this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
+            this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
         } catch (err) {
             return Promise.reject(err)
         }
 
-		return this.web3js.eth.getAccounts()
-        	.then(accounts => {
+        return this.web3js.eth.getAccounts()
+            .then(accounts => {
                 this.accountId = accounts[0]
-            	this._registerEvents()
+                this._registerEvents()
 
                 this._accountPoll()
-				return this.accountId
-        	})
-	}
+                return this.accountId
+            })
+    }
 
     getActiveGames() {
         return this.connect4.methods.getGamesByPlayer().call({from: this.accountId})
