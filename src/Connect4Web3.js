@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0xba45f89f0d130531c0f497f05945f856473e7934"
+const connect4Address = "0x70bd3de37fd8196b07a37b659c35e2f086efe956"
 
 function now() {
     return Math.round((new Date()).getTime() / 1000)
@@ -160,13 +160,7 @@ class Connect4Web3 extends EventEmitter {
             }, 2000);
     }
 
-    init() {
-        if (typeof web3 !== "undefined") {
-            this.web3js = new Web3(window.web3.currentProvider)
-        } else {
-            return Promise.reject(new Error("You need to install MetaMask to play, see https://metamask.io/"))
-        }
-
+    _initContractAccounts() {
         try {
             this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
         } catch (err) {
@@ -181,6 +175,24 @@ class Connect4Web3 extends EventEmitter {
                 this._accountPoll()
                 return this.accountId
             })
+    }
+
+    init() {
+        if (window.ethereum) {
+            this.web3js = new Web3(window.ethereum);
+			return window.ethereum.enable()
+                .then(() => {
+                    return this._initContractAccounts()
+                })
+                .catch(error => {
+                    return Promise.reject(new Error("MetaMask account access denied"))
+                })
+        } else if (window.web3) {
+            this.web3js = new Web3(window.web3.currentProvider)
+            return this._initContractAccounts()
+        } else {
+            return Promise.reject(new Error("You need to install MetaMask to play, see https://metamask.io/"))
+        }
     }
 
     getActiveGames() {
