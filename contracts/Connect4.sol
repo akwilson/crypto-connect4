@@ -7,10 +7,12 @@ contract Connect4 {
     event Draw(uint indexed gameId);
     event NewGame(address indexed player1, address indexed player2, uint gameId);
 
-    uint boardWidth = 7;
-    uint boardHeight = 6;
-    uint winCount = 4;
-    uint claimWindow = 30 minutes;
+    uint8 boardWidth;
+    uint8 boardHeight;
+    uint8 winCount;
+    uint claimWindow;
+    uint payAmount;
+    address public owner;
 
     struct Game {
         address player1;
@@ -19,10 +21,40 @@ contract Connect4 {
         bool isPlayer1Next;
         uint8[6][7] usedTiles;
         uint32 claimTime;
+        uint p1Amount;
+        uint p2Amount;
     }
 
     Game[] public games;
     mapping(address => uint) activeGames;
+
+    constructor(uint8 _boardWidth, uint8 _boardHeight, uint8 _winCount, uint _claimWindow, uint _payAmount) public {
+        owner = msg.sender;
+        boardWidth = _boardWidth;
+        boardHeight = _boardHeight;
+        winCount = _winCount;
+        claimWindow = _claimWindow * 1 minutes;
+        payAmount = _payAmount * 1 wei;
+    }
+
+    function _payoutVictory(Game _game, address winner) private {
+        uint prize = _game.p1Amount + _game.p2Amount;
+        uint ownerCut = prize * 10 / 100;
+        owner.transfer(ownerCut);
+        winner.transfer(prize - ownerCut);
+    }
+
+    function _payoutDraw(Game _game) private {
+        /*
+        uint p1Cut = _game.p1Amount * 10 / 100;
+        uint p2Cut = _game.p2Amount * 10 / 100;
+        _game.player1.transfer(_game.p1Amount - p1Cut);
+        _game.player2.transfer(_game.p2Amount - p2Cut);
+        owner.transfer(p1Cut + p2Cut);
+       */
+        _game.player1.transfer(_game.p1Amount);
+        _game.player2.transfer(_game.p2Amount);
+    }
 
     modifier isGameActive(uint256 _gameId) {
         Game memory game = games[_gameId];
@@ -103,7 +135,8 @@ contract Connect4 {
         emit NewGame(game.player1, game.player2, id);
     }
 
-    function takeTurn(uint _gameId, uint8 _x) public isGameActive(_gameId) {
+    function takeTurn(uint _gameId, uint8 _x) public payable isGameActive(_gameId) {
+        require(msg.value == payAmount, "Incorrect balance transferred");
         Game storage game = games[_gameId];
         address nextMover = game.isPlayer1Next ? game.player1 : game.player2;
         require(msg.sender == nextMover, "Not your move");
@@ -119,6 +152,12 @@ contract Connect4 {
 
         require(y < boardHeight, "Column full");
 
+        if (game.isPlayer1Next) {
+            game.p1Amount += msg.value;
+        } else {
+            game.p2Amount += msg.value;
+        }
+
         game.usedTiles[_x][y] = game.isPlayer1Next ? 1 : 2;
         game.isPlayer1Next = !game.isPlayer1Next;
         game.claimTime = uint32(now + claimWindow);
@@ -126,9 +165,11 @@ contract Connect4 {
         emit NextMove(_gameId, msg.sender, game.isPlayer1Next, _x, y);
         if (_isGameOver(game, _x, y)) {
             _markGameOver(game);
+            _payoutVictory(game, msg.sender);
             emit Victory(_gameId, msg.sender);
         } else if (_isGameDrawn(game)) {
             _markGameOver(game);
+            _payoutDraw(game);
             emit Draw(_gameId);
         }
 
@@ -141,6 +182,7 @@ contract Connect4 {
         require(msg.sender == game.player1 || msg.sender == game.player2, "Who are you?");
 
         _markGameOver(game);
+        _payoutVictory(game, msg.sender == game.player1 ? game.player2 : game.player1);
         emit Resigned(_gameId, msg.sender);
     }
 
@@ -151,6 +193,7 @@ contract Connect4 {
         require(game.claimTime <= now, "Cannot claim a win yet");
 
         _markGameOver(game);
+        _payoutVictory(game, msg.sender);
         emit Victory(_gameId, msg.sender);
     }
 
