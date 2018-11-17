@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 import { nextMove, resignGame, claimWin } from "../actions/gamePlayThunks"
+import { getConfig } from "../Config"
 import logo from "../connect4.svg"
 
 const mapStoreToProps = store => {
@@ -55,17 +56,9 @@ class BoardControl extends Component {
         const { player, player1, player1Moves, player2Moves } = this.props
 
         if (isWin) {
-            if (player === player1) {
-                return player2Moves.length * 0.01
-            } else {
-                return player1Moves.length * 0.01
-            }
+            return (player === player1 ? player2Moves.length : player1Moves.length) * getConfig().moveStakeEth * (1 - getConfig().ownerCut)
         } else {
-            if (player === player1) {
-                return player1Moves.length * 0.01
-            } else {
-                return player2Moves.length * 0.01
-            }
+            return (player === player1 ? player1Moves.length : player2Moves.length) * getConfig().moveStakeEth
         }
     }
 
@@ -75,13 +68,13 @@ class BoardControl extends Component {
         if (winner) {
             return (
                 <div className={"w-100 alert alert-" + (winner === player ? "success" : "warning")}>
-                    Game over -- you {winner === player ? "win" : "lose"} {this.calculateWinLoss(winner === player) + "ETH!"}
+                    Game over -- you {winner === player ? "win" : "lose"} {this.calculateWinLoss(winner === player) + " ETH!"}
                 </div>
             )
         } else if (resigner) {
             return (
                 <div className={"w-100 alert alert-" + (resigner !== player ? "success" : "warning")}>
-                    Game over -- you {resigner !== player ? "win" : "lose"} {this.calculateWinLoss(resigner !== player) + "ETH!"} {resigner !== player ? "Opponent" : "You"} resigned.
+                    Game over -- you {resigner !== player ? "win" : "lose"} {this.calculateWinLoss(resigner !== player) + " ETH!"} {resigner !== player ? "Opponent" : "You"} resigned.
                 </div>
             )
         } 

@@ -1,8 +1,7 @@
 import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
-
-const connect4Address = "0x29d9a5ce4ae33c4cef58be6761e634fa9a4d98f5"
+import { getConfig } from "./Config"
 
 function now() {
     return Math.round((new Date()).getTime() / 1000)
@@ -96,7 +95,7 @@ class Connect4Web3 extends EventEmitter {
 
     _registerEvents() {
         const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:8545"))
-        this.connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, connect4Address)
+        this.connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, getConfig().c4ContractAddress)
 
         let eventHandle = this.connect4Events.events.NewGame({filter: {player1: this.accountId}})
             .on("data", event => {
@@ -172,7 +171,7 @@ class Connect4Web3 extends EventEmitter {
 
     _initContractAccounts() {
         try {
-            this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, connect4Address)
+            this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, getConfig().c4ContractAddress)
         } catch (err) {
             return Promise.reject(err)
         }
@@ -237,7 +236,7 @@ class Connect4Web3 extends EventEmitter {
     takeTurn(gameId, column) {
         return new Promise((resolve, reject) => {
             this.connect4.methods.takeTurn(gameId, column)
-                .send({ from: this.accountId, value: this.web3js.utils.toWei("0.01", "ether") })
+                .send({ from: this.accountId, value: this.web3js.utils.toWei(String(getConfig().moveStakeEth), "ether") })
                 .on("transactionHash", transactionHash => {
                     resolve(transactionHash)
                 })

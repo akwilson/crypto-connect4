@@ -14,7 +14,7 @@ Deploy the smart contract
 $ truffle compile
 $ truffle migrate --network development
 ```
-Copy the contract address to src/Connect4Web3.js
+Copy the contract address to src/Config.js
 ```
 Running migration: 2_deploy_contracts.js
   Deploying Connect4...
@@ -23,6 +23,6 @@ Running migration: 2_deploy_contracts.js
 ```
 Contract address is 0x6339da0d80fe011f8d0c3eff79d6e5ec68e0c419
 ```
-$ npm start
+$ npm run dev
 ```
 Navigate to localhost:3000
