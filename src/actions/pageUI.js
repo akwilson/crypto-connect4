@@ -24,6 +24,11 @@ export const activeGames = games => ({
     games
 })
 
+export const balanceUpdate = balance => ({
+    type: "BALANCE_UPDATE",
+    balance
+})
+
 export const accountChanged = account => {
     return dispatch => {
         dispatch(web3Init(account))

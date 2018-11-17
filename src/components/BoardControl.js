@@ -51,19 +51,37 @@ class BoardControl extends Component {
             ((!isPlayer1Next && (player === player1)) || (isPlayer1Next && (player === player2)))
     }
 
+    calculateWinLoss(isWin) {
+        const { player, player1, player1Moves, player2Moves } = this.props
+
+        if (isWin) {
+            if (player === player1) {
+                return player2Moves.length * 0.01
+            } else {
+                return player1Moves.length * 0.01
+            }
+        } else {
+            if (player === player1) {
+                return player1Moves.length * 0.01
+            } else {
+                return player2Moves.length * 0.01
+            }
+        }
+    }
+
     makeGameOverDisplay() {
         const { player, winner, resigner } = this.props
 
         if (winner) {
             return (
                 <div className={"w-100 alert alert-" + (winner === player ? "success" : "warning")}>
-                    Game over -- you {winner === player ? "win!" : "lose!"}
+                    Game over -- you {winner === player ? "win" : "lose"} {this.calculateWinLoss(winner === player) + "ETH!"}
                 </div>
             )
         } else if (resigner) {
             return (
                 <div className={"w-100 alert alert-" + (resigner !== player ? "success" : "warning")}>
-                    Game over -- you {resigner !== player ? "win!" : "lose!"} {resigner !== player ? "Opponent" : "You"} resigned.
+                    Game over -- you {resigner !== player ? "win" : "lose"} {this.calculateWinLoss(resigner !== player) + "ETH!"} {resigner !== player ? "Opponent" : "You"} resigned.
                 </div>
             )
         } 

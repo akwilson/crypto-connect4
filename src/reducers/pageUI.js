@@ -1,6 +1,7 @@
 const initialState = {
     accounts: {
         player: null,
+        playerBalance: "0",
         opponent: ""
     },
     globalError: null
@@ -43,6 +44,14 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 globalError: null
+            }
+        case "BALANCE_UPDATE":
+            return {
+                ...state,
+                accounts: {
+                    ...state.accounts,
+                    playerBalance: action.balance.balance
+                }
             }
         default:
             return state

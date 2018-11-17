@@ -52,7 +52,9 @@ class Challenger extends Component {
                     <form>
                         <div className="row no-gutters form-group">
                             <span className="col-2">Your Account</span>
-                            <span className="col-10 px-2">{accounts.player}</span>
+                            <span className="col-6 px-2">{accounts.player}</span>
+                            <span className="col-2">Your Balance</span>
+                            <span className="col-2 px-2">{accounts.playerBalance}</span>
                         </div>
                         <div className="row no-gutters form-group my-0">
                             <label className="sr-only" htmlFor="oppo">Opponent Account</label>

@@ -1,7 +1,7 @@
 import c4Web3 from "./Connect4Web3"
 import { newGameBegin, gameOver, gameResigned, gameDrawn } from "./actions/gamePlay"
 import { challengeAcceptedTimeout, nextMoveReceivedTimeout } from "./actions/gamePlayThunks"
-import { globalErrorAction, accountChanged } from "./actions/pageUI"
+import { globalErrorAction, accountChanged, balanceUpdate } from "./actions/pageUI"
 
 export default store => {
     c4Web3.on("NEW_GAME_OK", newGameData => {
@@ -34,6 +34,10 @@ export default store => {
 
     c4Web3.on("ACCOUNT_CHANGED", account => {
         store.dispatch(accountChanged(account))
+    })
+
+    c4Web3.on("BALANCE", balance => {
+        store.dispatch(balanceUpdate(balance))
     })
 
 	return next => action => {

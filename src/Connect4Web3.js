@@ -2,7 +2,7 @@ import EventEmitter from "events"
 import Web3 from "web3"
 import Connect4Contract from "Connect4"
 
-const connect4Address = "0x70bd3de37fd8196b07a37b659c35e2f086efe956"
+const connect4Address = "0x29d9a5ce4ae33c4cef58be6761e634fa9a4d98f5"
 
 function now() {
     return Math.round((new Date()).getTime() / 1000)
@@ -17,6 +17,7 @@ class Connect4Web3 extends EventEmitter {
     _newGameOk(event) {
         const res = event.returnValues
         this._registerGameEvents(res.gameId)
+        this.updateBalance()
 
         return {
             gameId: res.gameId,
@@ -34,12 +35,14 @@ class Connect4Web3 extends EventEmitter {
                     player: res.player,
                     x: Number(res.x),
                     y: Number(res.y),
-                    isPlayer1Next: res.isPlayer1Next === null ? false : true
+                    isPlayer1Next: res.isPlayer1Next
                 }
 
+                this.updateBalance()
                 this.emit("NEXT_MOVE_OK", moveData)
             })
             .on("error", err => {
+                this.updateBalance()
                 this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
@@ -52,9 +55,11 @@ class Connect4Web3 extends EventEmitter {
                     winner: res.winner
                 }
 
+                this.updateBalance()
                 this.emit("GAME_OVER_OK", gameData)
             })
             .on("error", err => {
+                this.updateBalance()
                 this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
@@ -67,9 +72,11 @@ class Connect4Web3 extends EventEmitter {
                     resigner: res.resigner
                 }
 
+                this.updateBalance()
                 this.emit("GAME_RESIGNED_OK", gameData)
             })
             .on("error", err => {
+                this.updateBalance()
                 this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
@@ -77,9 +84,11 @@ class Connect4Web3 extends EventEmitter {
         eventHandle = this.connect4Events.events.Draw({filter: { gameId }})
             .on("data", event => {
                 const res = event.returnValues
+                this.updateBalance()
                 this.emit("GAME_DRAW_OK", { gameId: res.gameId })
             })
             .on("error", err => {
+                this.updateBalance()
                 this.emit("GAME_ERROR", err)
             })
         this.eventList.push(eventHandle)
@@ -152,6 +161,7 @@ class Connect4Web3 extends EventEmitter {
                         this.accountId = accounts[0]
                         this._clearActiveEvents()
                         this._registerEvents()
+                        this.updateBalance()
                         this.emit("ACCOUNT_CHANGED", this.accountId)
                     }
 
@@ -173,6 +183,7 @@ class Connect4Web3 extends EventEmitter {
                 this._registerEvents()
 
                 this._accountPoll()
+                this.updateBalance()
                 return this.accountId
             })
     }
@@ -226,7 +237,7 @@ class Connect4Web3 extends EventEmitter {
     takeTurn(gameId, column) {
         return new Promise((resolve, reject) => {
             this.connect4.methods.takeTurn(gameId, column)
-                .send({from: this.accountId})
+                .send({ from: this.accountId, value: this.web3js.utils.toWei("0.01", "ether") })
                 .on("transactionHash", transactionHash => {
                     resolve(transactionHash)
                 })
@@ -260,6 +271,13 @@ class Connect4Web3 extends EventEmitter {
                     reject(err)
                 })
         })
+    }
+
+    updateBalance() {
+        this.web3js.eth.getBalance(this.accountId)
+            .then(balance => {
+                this.emit("BALANCE", { balance: this.web3js.utils.fromWei(balance) })
+            })
     }
 }
 

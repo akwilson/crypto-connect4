@@ -12,7 +12,7 @@ contract Connect4 {
     uint8 winCount;
     uint claimWindow;
     uint payAmount;
-    address public owner;
+    address owner;
 
     struct Game {
         address player1;
@@ -45,13 +45,6 @@ contract Connect4 {
     }
 
     function _payoutDraw(Game _game) private {
-        /*
-        uint p1Cut = _game.p1Amount * 10 / 100;
-        uint p2Cut = _game.p2Amount * 10 / 100;
-        _game.player1.transfer(_game.p1Amount - p1Cut);
-        _game.player2.transfer(_game.p2Amount - p2Cut);
-        owner.transfer(p1Cut + p2Cut);
-       */
         _game.player1.transfer(_game.p1Amount);
         _game.player2.transfer(_game.p2Amount);
     }
@@ -172,9 +165,6 @@ contract Connect4 {
             _payoutDraw(game);
             emit Draw(_gameId);
         }
-
-        // V2
-        // make payable
     }
 
     function resignGame(uint _gameId) public isGameActive(_gameId) {
