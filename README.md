@@ -23,6 +23,6 @@ Running migration: 2_deploy_contracts.js
 ```
 Contract address is 0x6339da0d80fe011f8d0c3eff79d6e5ec68e0c419
 ```
-$ npm run dev
+$ npm start
 ```
 Navigate to localhost:3000
