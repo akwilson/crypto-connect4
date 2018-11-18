@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 import { nextMove, resignGame, claimWin } from "../actions/gamePlayThunks"
-import { getConfig } from "../Config"
+import Config from "../Config"
 import logo from "../connect4.svg"
 
 const mapStoreToProps = store => {
@@ -56,9 +56,9 @@ class BoardControl extends Component {
         const { player, player1, player1Moves, player2Moves } = this.props
 
         if (isWin) {
-            return (player === player1 ? player2Moves.length : player1Moves.length) * getConfig().moveStakeEth * (1 - getConfig().ownerCut)
+            return (player === player1 ? player2Moves.length : player1Moves.length) * Config.getMoveStakeEth() * (1 - Config.getOwnerCut())
         } else {
-            return (player === player1 ? player1Moves.length : player2Moves.length) * getConfig().moveStakeEth
+            return (player === player1 ? player1Moves.length : player2Moves.length) * Config.getMoveStakeEth()
         }
     }
 
