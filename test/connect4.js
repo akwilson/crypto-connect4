@@ -53,13 +53,23 @@ contract('Connect4', accounts => {
                 const cBal = await web3.eth.getBalance(instance.contract.address)
                 assert.equal(cBal, web3.utils.toWei("0.01", "ether"), "Wrong contract address amount")
             })
-            it("should reject if wrong balance sent accross", async () => {
+            it("repay difference if too much ether sent", async () => {
+                await instance.newGame(accounts[1])
+                const accBalPre = await web3.eth.getBalance(accounts[0])
+                const txn = await instance.takeTurn(0, 3, { value: web3.utils.toWei("1", "ether"), gasPrice: "1" })
+
+                const accBalPost = await web3.eth.getBalance(accounts[0])
+                const actual = new BigNumber(accBalPost)
+                const expected = new BigNumber(accBalPre).minus(new BigNumber(txn.receipt.gasUsed)).minus(new BigNumber(web3.utils.toWei("0.01", "ether")))
+                assert.ok(actual.isEqualTo(expected), "Wrong account balance after overspend")
+            })
+            it("should reject if insufficient balance sent accross", async () => {
                 await instance.newGame(accounts[1])
                 try {
-                    await instance.takeTurn(0, 3, { value: web3.utils.toWei("1", "ether") })
+                    await instance.takeTurn(0, 3, { value: web3.utils.toWei("0.001", "ether") })
                     assert.fail("Error not thrown")
                 } catch (e) {
-                    assert.equal(e.message, "VM Exception while processing transaction: revert Incorrect balance transferred")
+                    assert.equal(e.message, "VM Exception while processing transaction: revert Not enough Ether sent")
                 }
             })
             it("should reject if no balance sent accross", async () => {
@@ -68,7 +78,7 @@ contract('Connect4', accounts => {
                     await instance.takeTurn(0, 3)
                     assert.fail("Error not thrown")
                 } catch (e) {
-                    assert.equal(e.message, "VM Exception while processing transaction: revert Incorrect balance transferred")
+                    assert.equal(e.message, "VM Exception while processing transaction: revert Not enough Ether sent")
                 }
             })
             it("should reject move outside board size", async () => {

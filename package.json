@@ -6,6 +6,7 @@
   "dependencies": {
     "dateformat": "^3.0.3",
     "lodash": "^4.17.10",
+    "openzeppelin-solidity": "^2.0.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
