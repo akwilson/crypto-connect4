@@ -94,7 +94,7 @@ class Connect4Web3 extends EventEmitter {
     }
 
     _registerEvents() {
-        const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider("ws://localhost:8545"))
+        const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider(Config.getEventWebSocketURL()))
         this.connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, Config.getC4ContractAddress())
 
         let eventHandle = this.connect4Events.events.NewGame({filter: {player1: this.accountId}})

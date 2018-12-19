@@ -8,14 +8,16 @@ const configData = {
         },
         "3": {
             name: "Ropsten",
-            c4ContractAddress: "0x70f4f8fb7e0142f7736c8d1b0dba187fe9c84559",
+            c4ContractAddress: "0x87408bC4Df8A6FEf0d2779F1F056784e0F76c00d",
             moveStakeEth: 0.01,
-            etherscanURL: "https://ropsten.etherscan.io/"
+            etherscanURL: "https://ropsten.etherscan.io/",
+            eventWebSocketURL: "wss://ropsten.infura.io/ws"
         },
         "ganache": {
             name: "Ganache",
-            c4ContractAddress: "0x84c51fc572d6fedf28662d8e5cec63dfc2323f48",
-            moveStakeEth: 0.01
+            c4ContractAddress: "0x6f1825bec099e062e65ede8f7494bbdc569d96cd",
+            moveStakeEth: 0.01,
+            eventWebSocketURL: "ws://localhost:8545"
         }
     },
     ownerCut: 0.1
@@ -48,6 +50,10 @@ class Config {
 
     getEtherscnURL() {
         return configData.networks[this.selectedNetworkId].etherscanURL
+    }
+
+    getEventWebSocketURL() {
+        return configData.networks[this.selectedNetworkId].eventWebSocketURL
     }
 }
 
