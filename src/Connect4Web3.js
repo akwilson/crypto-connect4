@@ -1,6 +1,5 @@
 import EventEmitter from "events"
 import Web3 from "web3"
-import Connect4Contract from "Connect4"
 import Config from "./Config"
 
 function now() {
@@ -95,7 +94,7 @@ class Connect4Web3 extends EventEmitter {
 
     _registerEvents() {
         const web3jsEvents = new Web3(new Web3.providers.WebsocketProvider(Config.getEventWebSocketURL()))
-        this.connect4Events = new web3jsEvents.eth.Contract(Connect4Contract.abi, Config.getC4ContractAddress())
+        this.connect4Events = new web3jsEvents.eth.Contract(Config.getContractABI(), Config.getC4ContractAddress())
 
         let eventHandle = this.connect4Events.events.NewGame({filter: {player1: this.accountId}})
             .on("data", event => {
@@ -171,7 +170,7 @@ class Connect4Web3 extends EventEmitter {
 
     _initContractAccounts() {
         try {
-            this.connect4 = new this.web3js.eth.Contract(Connect4Contract.abi, Config.getC4ContractAddress())
+            this.connect4 = new this.web3js.eth.Contract(Config.getContractABI(), Config.getC4ContractAddress())
         } catch (err) {
             return Promise.reject(err)
         }

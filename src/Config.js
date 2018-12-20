@@ -1,3 +1,5 @@
+import Connect4ContractABI from "./Connect4ContractABI.json"
+
 const configData = {
     networks: {
         "1": {
@@ -54,6 +56,10 @@ class Config {
 
     getEventWebSocketURL() {
         return configData.networks[this.selectedNetworkId].eventWebSocketURL
+    }
+
+    getContractABI() {
+        return Connect4ContractABI
     }
 }
 

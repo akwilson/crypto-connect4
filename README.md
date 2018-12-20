@@ -1,11 +1,12 @@
 # Crypto Connect 4
 ```
 $ npm install
-$ cd node_modules/
-$ ln -s ../build/contracts/Connect4.json Connect4
-$ cd ..
+$ npm start
 ```
-Start Ganache
+Navigate to localhost:3000 and point MetaMask at Ropsten to start playing.
+
+## Run on Ganache
+Start Ganache and make a note of the seed phrase provided
 ```
 $ ganache-cli
 ```
@@ -25,4 +26,4 @@ Contract address is 0x6339da0d80fe011f8d0c3eff79d6e5ec68e0c419
 ```
 $ npm start
 ```
-Navigate to localhost:3000
+Point MetaMask to localhost:8545 and import an account using the seed phrase supplied by Ganache at startup.
